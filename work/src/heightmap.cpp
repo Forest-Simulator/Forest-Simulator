@@ -37,6 +37,10 @@ void Heightmap::constructHelper() {
 	heightmap.assign(size, vals);
 }
 
+void Heightmap::render() {
+	cout << "yes" << endl;
+}
+
 void Heightmap::generateHeightmap() {
 	int start = 0;
 	int end = size - 1;
@@ -47,30 +51,26 @@ void Heightmap::generateHeightmap() {
 	Point squareStart = Point(start, start);
 
 	while(distance > 0) {
-		cout << distance << endl;
-		// Diamond step
 		for(int x = 0; x < end; x += distance) {
 			for(int y = 0; y < end; y += distance) {
 				squareStart = Point(x, y);
-				// if(distance == 4) {
-					calculateSquareCenter(squareStart, distance);
-				// }
+				calculateSquareCenter(squareStart, distance);
 			}
 		}
 
-		// Square step
 		for(int x = 0; x < end; x += distance) {
 			for(int y = 0; y < end; y += distance) {
 				squareStart = Point(x, y);
-				// if(distance == 4) {
-					diamondStep(squareStart, distance);
-				// }
-				
-
+				diamondStep(squareStart, distance);
 			}
 		}
 
 		distance = distance / 2;
+
+		// Shrink the lower and upper bounds by the decay rate,
+		// so less randomness is introduced each iteration
+		lower += randomDecayRate;
+		upper -= randomDecayRate;
 	}
 }
 
@@ -85,12 +85,12 @@ void Heightmap::calculateSquareCenter(Point start, int distance) {
 	Point centerOfSquare = getSquareCenter(start, distance);
 	float averageOfSquare = getAverageOfSquare(start, distance);
 	
-	setAt(centerOfSquare, averageOfSquare);
+	setAt(centerOfSquare, averageOfSquare + randomValue());
 }
 
 void Heightmap::calculateDiamondCenter(Point diamondCenter, int distance) {
 	float averageOfDiamond = getAverageOfDiamond(diamondCenter, distance);
-	setAt(diamondCenter, averageOfDiamond);
+	setAt(diamondCenter, averageOfDiamond + randomValue());
 }
 
 void Heightmap::diamondStep(Point square, int distance) {

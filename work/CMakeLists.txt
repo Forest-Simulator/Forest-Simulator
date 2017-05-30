@@ -80,5 +80,3 @@ endif()
 add_subdirectory(src) # Primary source files
 add_subdirectory(res) # Resources like shaders (show up in IDE)
 set_property(TARGET ${CGRA_PROJECT} PROPERTY FOLDER "CGRA")
-
-

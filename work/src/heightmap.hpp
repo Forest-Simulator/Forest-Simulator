@@ -20,9 +20,18 @@ class Heightmap {
 private:
 	int size;
 	int seed;
-	float initial = -100.0f;
-	float lower = 0.0;
-	float upper = 10.0;
+	
+	// Random upper and lower bounds
+	float lower = -5.0;
+	float upper = 5.0;
+
+	// Initial needs to be at least double the lower 
+	// or upper bounds to work correctly
+	float initial = (lower * 3);
+
+	// Random decay rate
+	float randomDecayRate = 1.0;
+
 	std::vector<std::vector<float>> heightmap;
 
 	void constructHelper();
@@ -44,11 +53,11 @@ public:
 	Heightmap(float, float);
 	~Heightmap();
 
+	void render();
+	void generateHeightmap();
+	void printHeightmap();
 
 	float getAt(Point);
 	void setAt(Point, float);
 	void printAt(Point);
-	void generateHeightmap();
-	void printHeightmap();
-	
 };

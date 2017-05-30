@@ -8,8 +8,26 @@
 //
 //----------------------------------------------------------------------------
 
+#include <cmath>
+#include <iostream> // input/output streams
+#include <fstream>  // file streams
+#include <sstream>  // string streams
+#include <string>
+#include <stdexcept>
+#include <vector>
+
 #include "heightmap.hpp"
 
+using namespace std;
+
 int main(int argc, char **argv) {
-	Heightmap hm = Heightmap();
+	Heightmap hm = Heightmap(9);
+	Point p;
+	p.x = 0;
+	p.y = 4;
+	// hm.setAt(p, 5);
+	
+	// hm.printAt(p);
+	hm.generateHeightmap();
+	hm.printHeightmap();
 }

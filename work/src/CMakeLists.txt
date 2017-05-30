@@ -5,6 +5,7 @@
 
 # TODO list your header files (.hpp) here
 SET(headers
+	"cgra_math.hpp"
 	"heightmap.hpp"
 )
 

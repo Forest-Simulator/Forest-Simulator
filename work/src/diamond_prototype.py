@@ -94,20 +94,6 @@ class Heightmap:
         if distance > 0:
             for diamond in diamond_centers:
                 self.calculate_diamond_center(diamond, half_distance)
-                
-    def square_step(self, diamond, distance):
-        square_starts = [
-            Point(diamond.x-distance, diamond.y-distance),
-            Point(diamond.x-distance, diamond.y),
-            Point(diamond.x, diamond.y-distance),
-            Point(diamond.x, diamond.y),
-        ]
-
-        distance = distance // 2
-        if distance > 0:
-            for square in square_starts:
-                if (square.x >= 0 and square.y >= 0) and (square.x < self.size and square.y < self.size):
-                    self.calculate_square_center(square, distance)
 
     def get_average_of_square(self, start, distance):
         values = [

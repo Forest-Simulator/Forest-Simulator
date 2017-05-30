@@ -8,6 +8,7 @@
 #include <random>
 
 #include "cgra_math.hpp"
+#include "opengl.hpp"
 #include "heightmap.hpp"
 
 using namespace std;
@@ -19,12 +20,20 @@ Heightmap::Heightmap() {
 	constructHelper();
 }
 
-Heightmap::Heightmap(float mapSize) {
-	size = mapSize;
+Heightmap::Heightmap(int mapSize) {
+	// for(int i = 5; i < map)
+	int counter = 1;
+	int newSize = 5;
+	while(counter < mapSize) {
+		newSize = (newSize * 2) - 1;
+		counter++;
+	}
+	cout << newSize << endl;
+	size = newSize;
 	constructHelper();
 }
 
-Heightmap::Heightmap(float mapSize, float mapSeed) {
+Heightmap::Heightmap(int mapSize, float mapSeed) {
 	size = mapSize;
 	seed = mapSeed;
 	constructHelper();
@@ -38,7 +47,37 @@ void Heightmap::constructHelper() {
 }
 
 void Heightmap::render() {
-	cout << "yes" << endl;
+	int start = 0;
+	int end = size - 1;
+	int distance = (end - start);
+	float xyModifier = float(distance / 2);
+
+	glBegin(GL_TRIANGLES);
+	
+	// for(int z = 0; z < size; z++) {
+	// 	for(int x = 0; x < size; x++) {
+	// 		float worldX = x - xyModifier;
+	// 		float worldZ = -z + xyModifier;
+	// 		float y = getAt(Point(x, z));
+	// 		glVertex3f(worldX, y, worldZ);
+	// 		// vertices
+	// 		// triangle
+	// 		// cout << "pretendY: " << pretendY << ", actualY: " << y << endl;
+	// 		// cout << "x: " << x - xyModifier << ", y: " << (-y) + xyModifier << endl;
+	// 	}
+	// }
+
+	for(int i = 0; i < int(triangles.size()); i++) {
+		Triangle t = triangles[i];
+		vec3 v1 = vertices[t.vertices[0]];
+		vec3 v2 = vertices[t.vertices[1]];
+		vec3 v3 = vertices[t.vertices[2]];
+		glVertex3f(v1.x, v1.y, v1.z);
+		glVertex3f(v2.x, v2.y, v2.z);
+		glVertex3f(v3.x, v3.y, v3.z);
+	}
+
+	glEnd();
 }
 
 void Heightmap::generateHeightmap() {
@@ -61,7 +100,7 @@ void Heightmap::generateHeightmap() {
 		for(int x = 0; x < end; x += distance) {
 			for(int y = 0; y < end; y += distance) {
 				squareStart = Point(x, y);
-				diamondStep(squareStart, distance);
+				calculateDiamondCenters(squareStart, distance);
 			}
 		}
 
@@ -72,6 +111,10 @@ void Heightmap::generateHeightmap() {
 		lower += randomDecayRate;
 		upper -= randomDecayRate;
 	}
+
+	// Once the heightmap has been generated, turn it into a set of
+	// vertices, normals and triangles.
+	makeList();
 }
 
 void Heightmap::generateCorners(int start, int end) {
@@ -88,12 +131,7 @@ void Heightmap::calculateSquareCenter(Point start, int distance) {
 	setAt(centerOfSquare, averageOfSquare + randomValue());
 }
 
-void Heightmap::calculateDiamondCenter(Point diamondCenter, int distance) {
-	float averageOfDiamond = getAverageOfDiamond(diamondCenter, distance);
-	setAt(diamondCenter, averageOfDiamond + randomValue());
-}
-
-void Heightmap::diamondStep(Point square, int distance) {
+void Heightmap::calculateDiamondCenters(Point square, int distance) {
 	int halfDistance = (distance / 2);
 	Point centerOfSquare = getSquareCenter(square, distance);
 
@@ -109,6 +147,33 @@ void Heightmap::diamondStep(Point square, int distance) {
 			calculateDiamondCenter(p, halfDistance);
 		}
 	}
+}
+
+void Heightmap::makeList() {
+	float xyModifier = float((size-1) / 2);
+
+	for(int z = 0; z < size; z++) {
+		for(int x = 0; x < size; x++) {
+			float worldX = x - xyModifier;
+			float worldZ = -z + xyModifier;
+			float y = getAt(Point(x, z));
+
+			vertices.push_back(vec3(worldX, y, worldZ));
+		}
+	}
+
+	for(int i = 0; i < int(vertices.size()); i++) {
+		int nextCol = i + 1;
+		int nextRow = i + size;
+
+		Triangle t = Triangle(i, nextCol, nextRow);
+		triangles.push_back(t);
+	}
+}
+
+void Heightmap::calculateDiamondCenter(Point diamondCenter, int distance) {
+	float averageOfDiamond = getAverageOfDiamond(diamondCenter, distance);
+	setAt(diamondCenter, averageOfDiamond + randomValue());
 }
 
 float Heightmap::getAverageOfSquare(Point start, int distance) {

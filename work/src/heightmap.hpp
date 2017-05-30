@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 
+#include "cgra_math.hpp"
+
 struct Point {
 	int x;
 	int y;
@@ -16,14 +18,25 @@ struct Point {
 	}
 };
 
+
+struct Triangle {
+	std::vector<int> vertices;
+	Triangle() {};
+	Triangle(int v1, int v2, int v3) {
+		vertices.push_back(v1);
+		vertices.push_back(v2);
+		vertices.push_back(v3);
+	};
+};
+
 class Heightmap {
 private:
 	int size;
 	int seed;
 	
 	// Random upper and lower bounds
-	float lower = -5.0;
-	float upper = 5.0;
+	float lower = -2.0;
+	float upper = 2.0;
 
 	// Initial needs to be at least double the lower 
 	// or upper bounds to work correctly
@@ -34,11 +47,15 @@ private:
 
 	std::vector<std::vector<float>> heightmap;
 
+	std::vector<cgra::vec3> vertices;
+	std::vector<Triangle> triangles;
+
 	void constructHelper();
 	void generateCorners(int, int);
-	void diamondStep(Point, int);
+	void calculateDiamondCenters(Point, int);
 	void calculateSquareCenter(Point, int);
 	void calculateDiamondCenter(Point, int);
+	void makeList();
 
 	float getAverageOfSquare(Point, int);
 	float getAverageOfDiamond(Point, int);
@@ -49,8 +66,8 @@ private:
 	
 public:
 	Heightmap();
-	Heightmap(float);
-	Heightmap(float, float);
+	Heightmap(int);
+	Heightmap(int, float);
 	~Heightmap();
 
 	void render();

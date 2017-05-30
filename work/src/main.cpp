@@ -118,7 +118,7 @@ void setupCamera(int width, int height) {
 
 
 void initHeightmap() {
-	heightmap = new Heightmap(5);
+	heightmap = new Heightmap(3);
 	heightmap->generateHeightmap();
 }
 

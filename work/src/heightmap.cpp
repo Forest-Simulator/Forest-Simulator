@@ -28,7 +28,6 @@ Heightmap::Heightmap(int mapSize) {
 		newSize = (newSize * 2) - 1;
 		counter++;
 	}
-	cout << newSize << endl;
 	size = newSize;
 	constructHelper();
 }
@@ -102,8 +101,8 @@ void Heightmap::generateHeightmap() {
 
 		// Shrink the lower and upper bounds by the decay rate,
 		// so less randomness is introduced each iteration
-		lower += randomDecayRate;
-		upper -= randomDecayRate;
+		lower += (lower < 0) ? randomDecayRate : 0;
+		upper -= (upper > 0) ? randomDecayRate : 0;
 	}
 
 	// Once the heightmap has been generated, turn it into a set of

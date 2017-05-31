@@ -136,15 +136,15 @@ void initLight() {
 
 
 void initHeightmap() {
-	heightmap = new Heightmap(3);
+	heightmap = new Heightmap(6);
 	heightmap->generateHeightmap();
 }
 
 
-void redPlasticMaterial() {
-	GLfloat mat_specular[] = { 0.8, 0.8, 0.8, 1.0 };
-	GLfloat mat_diffuse[] = { 1.0, 0.0, 0.0, 1.0 };
-	GLfloat mat_shininess[] = { 128.0 };
+void grassMaterial() {
+	GLfloat mat_specular[] = { 0.0, 0.36, 0.04, 1.0 };
+	GLfloat mat_diffuse[] = { 0.0, 0.36, 0.04, 1.0 };
+	GLfloat mat_shininess[] = { 30.0 };
 
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
@@ -162,7 +162,7 @@ void renderObjects(int width, int height) {
 		glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE); 
 		glColor3f(1.0, 0.0, 0.0);
 
-		redPlasticMaterial();
+		grassMaterial();
 		heightmap->render();
 
 

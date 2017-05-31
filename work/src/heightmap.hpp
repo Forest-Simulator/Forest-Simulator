@@ -36,15 +36,15 @@ private:
 	int seed;
 	
 	// Random upper and lower bounds
-	float lower = -2.0;
-	float upper = 2.0;
+	float lower = -1.0;
+	float upper = 1.0;
 
 	// Initial needs to be at least double the lower 
 	// or upper bounds to work correctly
 	float initial = (lower * 3);
 
 	// Random decay rate
-	float randomDecayRate = 1.0;
+	float randomDecayRate = 0.1;
 
 	std::vector<std::vector<float>> heightmap;
 

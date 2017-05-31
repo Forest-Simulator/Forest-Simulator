@@ -21,6 +21,7 @@ struct Point {
 
 struct Triangle {
 	std::vector<int> vertices;
+	std::vector<int> normals;
 	Triangle() {};
 	Triangle(int v1, int v2, int v3) {
 		vertices.push_back(v1);
@@ -48,6 +49,7 @@ private:
 	std::vector<std::vector<float>> heightmap;
 
 	std::vector<cgra::vec3> vertices;
+	std::vector<cgra::vec3> normals;
 	std::vector<Triangle> triangles;
 
 	void constructHelper();

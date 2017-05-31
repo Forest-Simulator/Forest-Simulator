@@ -116,10 +116,39 @@ void setupCamera(int width, int height) {
 	glRotatef(g_yaw, 0, 1, 0);
 }
 
+void initAmbientLight() {
+	float noLight[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	float ambient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+	
+	// Remove diffuse and specular components for the 
+	// ambient light
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, ambient);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, ambient);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+
+	glEnable(GL_LIGHT0);
+}
+
+
+void initLight() {
+	initAmbientLight();
+}
+
 
 void initHeightmap() {
 	heightmap = new Heightmap(3);
 	heightmap->generateHeightmap();
+}
+
+
+void redPlasticMaterial() {
+	GLfloat mat_specular[] = { 0.8, 0.8, 0.8, 1.0 };
+	GLfloat mat_diffuse[] = { 1.0, 0.0, 0.0, 1.0 };
+	GLfloat mat_shininess[] = { 128.0 };
+
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 }
 
 
@@ -133,6 +162,7 @@ void renderObjects(int width, int height) {
 		glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE); 
 		glColor3f(1.0, 0.0, 0.0);
 
+		redPlasticMaterial();
 		heightmap->render();
 
 
@@ -247,6 +277,7 @@ int main(int argc, char **argv) {
 
 	// Initialize Geometry/Material/Lights
 	initHeightmap();
+	initLight();
 
 	// Loop until the user closes the window
 	while (!glfwWindowShouldClose(g_window)) {

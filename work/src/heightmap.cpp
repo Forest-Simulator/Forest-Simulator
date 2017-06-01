@@ -40,6 +40,10 @@ Heightmap::Heightmap(int mapSize, float mapSeed) {
 
 Heightmap::~Heightmap() {  }
 
+vector<vec3> Heightmap::getVertices(){
+	return vertices;
+}
+
 void Heightmap::constructHelper() {
 	vector<float> vals (size, initial);
 	heightmap.assign(size, vals);

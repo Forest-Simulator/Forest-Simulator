@@ -79,4 +79,6 @@ public:
 	float getAt(Point);
 	void setAt(Point, float);
 	void printAt(Point);
+
+	std::vector<cgra::vec3> getVertices();
 };

@@ -6,16 +6,26 @@
 using namespace std;
 using namespace cgra;
 
-class Boid{
 
+struct triangle{
+	vec3 vertices[3];
+
+	cgra::vec3 normal;
+};
+
+class Boid{
 private:
 	cgra::vec3 position;
 	cgra::vec3 velocity;
 	cgra::vec3 destination;
 
-	GLuint m_displayListPoly = 0; // DisplayList for Polygon
+	vector<triangle> triangles;
 
-	void pyramid();
+	GLuint m_displayList = 0;
+
+	void addTriangles();
+	void createDisplayList();
+	void process(triangle tri);
 
 public:
 	Boid(cgra::vec3 position);

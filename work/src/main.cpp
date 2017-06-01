@@ -20,6 +20,7 @@
 #include "cgra_math.hpp"
 #include "opengl.hpp"
 #include "heightmap.hpp"
+#include "boid.hpp"
 
 using namespace std;
 using namespace cgra;
@@ -47,6 +48,10 @@ float g_zoom = 1.0;
 // Base Heightmap to be rendered upon
 //
 Heightmap* heightmap;
+
+//Flock of birds
+//
+Boid* boid;
 
 
 // Mouse Button callback
@@ -140,11 +145,24 @@ void initHeightmap() {
 	heightmap->generateHeightmap();
 }
 
+void initBoids(){
+	boid = new Boid(vec3(0, 2, 0));
+}
 
 void grassMaterial() {
 	GLfloat mat_specular[] = { 0.0, 0.36, 0.04, 1.0 };
 	GLfloat mat_diffuse[] = { 0.0, 0.36, 0.04, 1.0 };
 	GLfloat mat_shininess[] = { 30.0 };
+
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+}
+
+void boidMaterial() {
+	GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1.0 };
+	GLfloat mat_diffuse[] = { 0.8, 0.8, 0.8, 1.0 };
+	GLfloat mat_shininess[] = { 0 };
 
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
@@ -165,17 +183,23 @@ void renderObjects(int width, int height) {
 		grassMaterial();
 		heightmap->render();
 
+		boidMaterial();
+		boid->render();
+
 
 	glPopMatrix();
+
 	glFlush();
+
+
 }
 
 // Draw function
 //
 void render(int width, int height) {
 
-	// Black background
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	// Light blue background
+	glClearColor(0.49f, 0.65f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
@@ -276,6 +300,7 @@ int main(int argc, char **argv) {
 
 
 	// Initialize Geometry/Material/Lights
+	initBoids();
 	initHeightmap();
 	initLight();
 

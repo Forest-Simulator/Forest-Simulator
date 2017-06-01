@@ -8,6 +8,7 @@ SET(headers
 	"cgra_math.hpp"
 	"opengl.hpp"
 	"heightmap.hpp"
+	"boid.hpp"
 )
 
 
@@ -15,6 +16,7 @@ SET(headers
 SET(sources
 	"main.cpp"
 	"heightmap.cpp"
+	"boid.cpp"
 )
 
 # Add executable target and link libraries

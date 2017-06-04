@@ -149,23 +149,30 @@ void initHeightmap() {
 }
 
 void initTrees() {
-	lsys::RuleContext rc = lsys::RuleContext();
-	rc.left = 'X';
 	// vector<lsys::Rule> rules = {
 	// 	lsys::Rule('X', "F[-X][X]F[-X]+FX"),
-	// 	lsys::Rule('F', "FF", rc)
+	// 	lsys::Rule('F', "FF")
 	// };
 
 	vector<lsys::Rule> rules = {
-		lsys::Rule('F', "FF+[+F-F-F]-[-F+F+F]")
+		lsys::Rule('F', "FF[+/F-/F-/F]-///////[-/F+/F+/F]")
 	};
 
-	lsys::LSystem l = lsys::LSystem("F", rules);
-	l.generate();
-	vector<string> s = l.generate();
+	// vector<lsys::Rule> rules = {
+	// 	lsys::Rule('a', "[[&sl!a]/////'[&sl!a]///////[&sl!a]]"),
+	// 	lsys::Rule('s', "Sl"),
+	// 	lsys::Rule('S', "S/////s"),
+	// 	lsys::Rule('l', "['''^^{-S+S+S-|-S+S+S}]")
+	// };
 
-	t = new tree::Tree(s, 25.0f, 2.0f);
-	// cout << t << endl;
+
+	lsys::LSystem l = lsys::LSystem("F", rules);
+	vector<string> s;
+	for(int i = 0; i < 2; i++) {
+		s = l.generate();	
+	}
+
+	t = new tree::Tree(s, 25.0f, 0.2f);
 }
 
 void initBoids(){

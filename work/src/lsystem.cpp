@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -6,12 +7,12 @@
 using namespace lsys;
 using namespace std;
 
-Rule::Rule(char c, char t) {
+Rule::Rule(char c, std::string t) {
 	RuleContext rc = RuleContext();
 	Rule(c, t, rc);
 }
 
-Rule::Rule(char c, char t, RuleContext rc) {
+Rule::Rule(char c, std::string t, RuleContext rc) {
 	character = c;
 	transform = t;
 	context = rc;
@@ -21,6 +22,10 @@ bool Rule::matches(char characterMatch, char leftMatch, char rightMatch) {
 	bool charMatches = (characterMatch == character);
 	bool leftMatches = (leftMatch == context.left);
 	bool rightMatches = (rightMatch == context.right);
+
+	cout << character << endl;
+	cout << "left: " << context.left << ", right: " << context.right << endl;
+
 	return charMatches;
 }
 

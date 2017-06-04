@@ -16,10 +16,10 @@ namespace lsys {
 		RuleContext context;
 
 	public:
-		char transform;
-		
-		Rule(char, char);
-		Rule(char, char, RuleContext);
+		std::string transform;
+
+		Rule(char, std::string);
+		Rule(char, std::string, RuleContext);
 		bool matches(char, char, char);
 	};
 

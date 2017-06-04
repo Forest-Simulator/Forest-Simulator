@@ -146,6 +146,15 @@ void initHeightmap() {
 	heightmap->generateHeightmap();
 }
 
+void initTrees() {
+	vector<lsys::Rule> rules = {
+		lsys::Rule('X', "F[-X][X]F[-X]+FX"),
+		lsys::Rule('F', "FF")
+	};
+	lsys::LSystem l = lsys::LSystem("X", rules);
+	l.generate();
+}
+
 void initBoids(){
 	boid = new Boid(vec3(0, 2, 0));
 }
@@ -303,6 +312,7 @@ int main(int argc, char **argv) {
 	// Initialize Geometry/Material/Lights
 	initBoids();
 	initHeightmap();
+	initTrees();
 	initLight();
 
 	// Loop until the user closes the window

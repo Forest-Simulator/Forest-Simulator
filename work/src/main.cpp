@@ -147,12 +147,15 @@ void initHeightmap() {
 }
 
 void initTrees() {
+	lsys::RuleContext rc = lsys::RuleContext();
+	rc.left = 'X';
 	vector<lsys::Rule> rules = {
 		lsys::Rule('X', "F[-X][X]F[-X]+FX"),
-		lsys::Rule('F', "FF")
+		lsys::Rule('F', "FF", rc)
 	};
 	lsys::LSystem l = lsys::LSystem("X", rules);
-	l.generate();
+	vector<string> strings = l.generate();
+	cout << strings.back() << endl;
 }
 
 void initBoids(){

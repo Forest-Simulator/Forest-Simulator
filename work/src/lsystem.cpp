@@ -8,8 +8,9 @@ using namespace lsys;
 using namespace std;
 
 Rule::Rule(char c, std::string t) {
-	RuleContext rc = RuleContext();
-	Rule(c, t, rc);
+	character = c;
+	transform = t;
+	context = RuleContext();
 }
 
 Rule::Rule(char c, std::string t, RuleContext rc) {
@@ -18,15 +19,26 @@ Rule::Rule(char c, std::string t, RuleContext rc) {
 	context = rc;
 }
 
+Rule::~Rule() {}
+
+bool Rule::isValid(char check) {
+	return check != invalid;
+}
+
 bool Rule::matches(char characterMatch, char leftMatch, char rightMatch) {
 	bool charMatches = (characterMatch == character);
 	bool leftMatches = (leftMatch == context.left);
 	bool rightMatches = (rightMatch == context.right);
 
-	cout << character << endl;
-	cout << "left: " << context.left << ", right: " << context.right << endl;
-
-	return charMatches;
+	if(isValid(context.left) && isValid(context.right)) {
+		return charMatches && leftMatches && rightMatches;
+	} else if(isValid(context.left)) {
+		return charMatches && leftMatches;
+	} else if(isValid(context.right)) {
+		return charMatches && rightMatches;
+	} else {
+		return charMatches;
+	}
 }
 
 LSystem::LSystem(string axiom, vector<Rule> r) {
@@ -34,6 +46,8 @@ LSystem::LSystem(string axiom, vector<Rule> r) {
 	rules = r;
 	currentString = axiom;
 }
+
+LSystem::~LSystem() {}
 
 vector<string> LSystem::generate() {
 	for(int i = 0; i < int(currentString.size()); i++) {
@@ -56,7 +70,7 @@ vector<string> LSystem::generate() {
 			}
 		}
 
-		if(ruleMatch) {
+		if(!ruleMatch) {
 			nextString += c;
 		}
 	}

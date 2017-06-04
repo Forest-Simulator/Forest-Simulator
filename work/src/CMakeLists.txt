@@ -6,9 +6,11 @@
 # TODO list your header files (.hpp) here
 SET(headers
 	"cgra_math.hpp"
+	"cgra_geometry.hpp"
 	"opengl.hpp"
 	"heightmap.hpp"
 	"lsystem.hpp"
+	"tree.hpp"
 	"boid.hpp"
 )
 
@@ -18,6 +20,7 @@ SET(sources
 	"main.cpp"
 	"heightmap.cpp"
 	"lsystem.cpp"
+	"tree.cpp"
 	"boid.cpp"
 )
 

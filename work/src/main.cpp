@@ -21,6 +21,7 @@
 #include "opengl.hpp"
 #include "heightmap.hpp"
 #include "lsystem.hpp"
+#include "tree.hpp"
 #include "boid.hpp"
 
 using namespace std;
@@ -49,6 +50,7 @@ float g_zoom = 1.0;
 // Base Heightmap to be rendered upon
 //
 hmap::Heightmap* heightmap;
+tree::Tree* t;
 
 //Flock of birds
 //
@@ -154,8 +156,10 @@ void initTrees() {
 		lsys::Rule('F', "FF", rc)
 	};
 	lsys::LSystem l = lsys::LSystem("X", rules);
-	vector<string> strings = l.generate();
-	cout << strings.back() << endl;
+	vector<string> s = l.generate();
+
+	t = new tree::Tree(s, 25.0f, 2.0f);
+	// cout << t << endl;
 }
 
 void initBoids(){
@@ -165,6 +169,16 @@ void initBoids(){
 void grassMaterial() {
 	GLfloat mat_specular[] = { 0.0, 0.36, 0.04, 1.0 };
 	GLfloat mat_diffuse[] = { 0.0, 0.36, 0.04, 1.0 };
+	GLfloat mat_shininess[] = { 30.0 };
+
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+}
+
+void treeMaterial() {
+	GLfloat mat_specular[] = { 0.51, 0.32, 0.0, 1.0 };
+	GLfloat mat_diffuse[] = { 0.51, 0.32, 0.0, 1.0 };
 	GLfloat mat_shininess[] = { 30.0 };
 
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
@@ -193,8 +207,16 @@ void renderObjects(int width, int height) {
 		glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE); 
 		glColor3f(1.0, 0.0, 0.0);
 
-		grassMaterial();
-		heightmap->render();
+		glPushMatrix();
+			grassMaterial();
+			heightmap->render();
+		glPopMatrix();
+
+		glPushMatrix();
+			glTranslatef(0.0, 5.0, 0.0);
+			treeMaterial();
+			t->render();
+		glPopMatrix();
 
 		boidMaterial();
 		boid->render();

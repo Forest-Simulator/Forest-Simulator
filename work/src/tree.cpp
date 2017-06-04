@@ -18,6 +18,19 @@ Tree::Tree(vector<string> s, float a, float l) {
 	heading = vec3(0, 0, 1);
 	up = vec3(0, 1, 0);
 	left = vec3(1, 0, 0);
+
+	functionMap = {
+		{'F', &Tree::drawForward},
+		{'G', &Tree::drawForward},
+		{'[', &Tree::pushMatrix},
+		{']', &Tree::popMatrix},
+		{'+', &Tree::turnLeft},
+		{'-', &Tree::turnRight},
+		{'^', &Tree::pitchUp},
+		{'&', &Tree::pitchDown},
+		{'\\', &Tree::rollLeft},
+		{'/', &Tree::rollRight}
+	};
 }
 
 void Tree::drawForward() {
@@ -62,6 +75,13 @@ void Tree::rollRight() {
 	glRotatef(angle, heading.x, heading.y, heading.z);
 }
 
+void Tree::pushMatrix() {
+	glPushMatrix();
+}
+
+void Tree::popMatrix() {
+	glPopMatrix();
+}
 
 void tMaterial() {
 	GLfloat mat_specular[] = { 0.51, 0.32, 0.0, 1.0 };
@@ -103,12 +123,9 @@ void greenMaterial() {
 	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 }
 
-void Tree::render() {
-	// 
+void drawAxis() {
 	float radius = 0.02;
 	float axisLength = 10.0;
-
-	string s = strings.back();
 
 	// Y Axis
 	glPushMatrix();
@@ -134,32 +151,21 @@ void Tree::render() {
 	glPopMatrix();
 
 	tMaterial();
+}
+
+void Tree::render() {
+	string s = strings.back();
+	drawAxis();
 
 	glPushMatrix();
 	glRotatef(-90, 1.0, 0.0, 0.0);
 	for(int i = 0; i < int(s.size()); i++) {
 		char c = s.at(i);
-		if(c == 'F') {
-			drawForward();
-		} else if(c == 'G') {
-			drawForward();
-		} else if(c == '+') {
-			turnLeft();
-		} else if(c == '-') {
-			turnRight();
-		} else if(c == '^') {
-			pitchUp();
-		} else if(c == '&') {
-			pitchDown();
-		} else if(c == '\\') {
-			rollLeft();
-		} else if(c == '/') {
-			rollRight();
-		} else if(c == '[') {
-			glPushMatrix();
-		} else if(c == ']') {
-			glPopMatrix();
-		}
+
+		// Get the corresponding function for character
+		// c and call it on this object
+		RenderFunction func = functionMap.at(c);
+		(this->*func)();
 	}
 	glPopMatrix();
 }

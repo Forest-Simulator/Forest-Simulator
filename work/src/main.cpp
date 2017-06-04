@@ -165,7 +165,6 @@ void initTrees() {
 	// 	lsys::Rule('l', "['''^^{-S+S+S-|-S+S+S}]")
 	// };
 
-
 	lsys::LSystem l = lsys::LSystem("F", rules);
 	vector<string> s;
 	for(int i = 0; i < 2; i++) {

@@ -151,11 +151,17 @@ void initHeightmap() {
 void initTrees() {
 	lsys::RuleContext rc = lsys::RuleContext();
 	rc.left = 'X';
+	// vector<lsys::Rule> rules = {
+	// 	lsys::Rule('X', "F[-X][X]F[-X]+FX"),
+	// 	lsys::Rule('F', "FF", rc)
+	// };
+
 	vector<lsys::Rule> rules = {
-		lsys::Rule('X', "F[-X][X]F[-X]+FX"),
-		lsys::Rule('F', "FF", rc)
+		lsys::Rule('F', "FF+[+F-F-F]-[-F+F+F]")
 	};
-	lsys::LSystem l = lsys::LSystem("X", rules);
+
+	lsys::LSystem l = lsys::LSystem("F", rules);
+	l.generate();
 	vector<string> s = l.generate();
 
 	t = new tree::Tree(s, 25.0f, 2.0f);

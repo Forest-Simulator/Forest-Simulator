@@ -1,64 +1,106 @@
-import random
 from turtle import *
 
-random.seed(1)
-
-random.randint(1, 5)
-
-class Branch:
-    def __init__(self, length, space):
-        self.children = []
-        self.length = length
-        self.space = space
-        
-        new_length = self.length - 2
-        new_space = self.space + 1
-        rand_num_branches = random.randint(2, 5)
-        
-        if new_length > 0:
-            for i in range(0, rand_num_branches):
-                self.children.append(Branch(new_length, new_space))
-            
-    def draw(self, parent_pos):
-        
-        # Reset the position if this is not the root
-        if parent_pos is not None:
-            setpos(parent_pos[0], parent_pos[1])
-            
-        pendown()
-        forward(self.length * 10)
-        penup()
-        pos = position()
+class Rule:
+    def __init__(self, char, transform, left_context=None, right_context=None):
+        self.char = char
+        self.transform = transform
+        self.left_context = left_context
+        self.right_context = right_context
     
-        for branch in self.children:
-            rand_angle = random.randint(-90, 90)
-            right(rand_angle)
-            self.children[0].draw(pos)
-            right(-rand_angle)
+    def is_not_none(self, context):
+        return context is not None
+    
+    def matches(self, char, left, right):
+        char_match = (char == self.char)
+        right_match = (right == self.right_context)
+        left_match = (left == self.left_context)
         
-    def __str__(self):
-        string = ''
-        
-        for i in range(0, self.length):
-            string += (' ' * self.space) + '|\n'
-        
-        for branch in self.children:
-            string += str(branch)
-        
-        return string
+        if self.is_not_none(self.left_context) and self.is_not_none(self.right_context):
+            return char_match and left_match and right_match
+        elif self.is_not_none(self.left_context):
+            return char_match and left_match
+        elif self.is_not_none(self.right_context):
+            return char_match and right_match
+        else:
+            return char_match
 
+class LSystem:
+    def __init__(self, axiom, rules):
+        self.strings = [axiom]
+        self.rules = rules
+        self.current_string = axiom
+        self.next_string = ""
+
+    def generate(self):
+        count = 0
+        for char in self.current_string:
+            left = self.current_string[count-1] if count-1 > -1 else None
+            right = self.current_string[count+1] if count+1 < len(self.current_string) else None
+            
+            rule_match = False
+            for r in self.rules:
+                if r.matches(char, left, right):
+                    rule_match = True
+                    self.next_string += r.transform
+                    break
+            
+            if not rule_match:
+                self.next_string += char
+                
+            count += 1
+
+        self.current_string = self.next_string
+        self.next_string = ""
+        
+        self.strings.append(self.current_string)
+
+        return self.strings
+    
 class Tree:
-    def __init__(self):
-        self.initial_branch = Branch(10, 0)
-        
+    def __init__(self, tree, angle, length):
+        self.tree = tree
+        self.angle = angle
+        self.length = length
+    
     def draw(self):
-        left(90)
-        self.initial_branch.draw(None)
+        positions = []
+        headings = []
         
-    def __str__(self):
-        return str(self.initial_branch)
-        
-        
-t = Tree()
+        for sentence in self.tree:
+            for c in sentence:
+                if c == "F":
+                    pendown()
+                    forward(self.length)
+                    penup()
+                elif c == "G":
+                    pendown()
+                    forward(self.length)
+                    penup()
+                elif c == "+":
+                    left(self.angle)
+                elif c == "-":
+                    right(self.angle)
+                elif c == "[":
+                    positions.append(position())
+                    headings.append(heading())
+                elif c == "]":
+                    setpos(positions.pop())
+                    setheading(headings.pop())
+
+rules = [
+    Rule("X", "F[-X][X]F[-X]+FX"),
+    Rule("F", "FF"),
+]
+
+lsys = LSystem("X", rules)
+for i in range(0, 4):
+    lsys.generate()
+
+pen({
+    'speed': 10
+})
+
+print(lsys.strings[-1])
+
+t = Tree([lsys.strings[-1]], 25, 4)
 t.draw()
-done()

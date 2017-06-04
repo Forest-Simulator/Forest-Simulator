@@ -13,6 +13,7 @@
 
 using namespace std;
 using namespace cgra;
+using namespace hmap;
 
 Heightmap::Heightmap() {
 	// Default the size to 5 if one is not provided

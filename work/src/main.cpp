@@ -20,6 +20,7 @@
 #include "cgra_math.hpp"
 #include "opengl.hpp"
 #include "heightmap.hpp"
+#include "lsystem.hpp"
 #include "boid.hpp"
 
 using namespace std;
@@ -47,7 +48,7 @@ float g_zoom = 1.0;
 
 // Base Heightmap to be rendered upon
 //
-Heightmap* heightmap;
+hmap::Heightmap* heightmap;
 
 //Flock of birds
 //
@@ -141,7 +142,7 @@ void initLight() {
 
 
 void initHeightmap() {
-	heightmap = new Heightmap(6);
+	heightmap = new hmap::Heightmap(6);
 	heightmap->generateHeightmap();
 }
 

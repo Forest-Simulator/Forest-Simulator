@@ -8,6 +8,7 @@ SET(headers
 	"cgra_math.hpp"
 	"opengl.hpp"
 	"heightmap.hpp"
+	"lsystem.hpp"
 	"boid.hpp"
 )
 
@@ -16,6 +17,7 @@ SET(headers
 SET(sources
 	"main.cpp"
 	"heightmap.cpp"
+	"lsystem.cpp"
 	"boid.cpp"
 )
 

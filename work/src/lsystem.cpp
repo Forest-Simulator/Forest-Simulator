@@ -2,8 +2,10 @@
 #include <string>
 #include <vector>
 
+#include "cgra_math.hpp"
 #include "lsystem.hpp"
 
+using namespace cgra;
 using namespace lsys;
 using namespace std;
 
@@ -11,6 +13,12 @@ Rule::Rule(char c, std::string t) {
 	character = c;
 	transform = t;
 	context = RuleContext();
+}
+
+Rule::Rule(char c, std::string t, float ch) {
+	character = c;
+	transform = t;
+	chance = ch;
 }
 
 Rule::Rule(char c, std::string t, RuleContext rc) {
@@ -26,18 +34,27 @@ bool Rule::isValid(char check) {
 }
 
 bool Rule::matches(char characterMatch, char leftMatch, char rightMatch) {
+	float randomChance = math::random(0.0, 1.0);
+	bool chanceMatches;
+
+	if(chance > 0.0) {
+		chanceMatches = (randomChance < chance);
+	} else {
+		chanceMatches = true;
+	}
+
 	bool charMatches = (characterMatch == character);
 	bool leftMatches = (leftMatch == context.left);
 	bool rightMatches = (rightMatch == context.right);
 
 	if(isValid(context.left) && isValid(context.right)) {
-		return charMatches && leftMatches && rightMatches;
+		return charMatches && leftMatches && rightMatches && chanceMatches;
 	} else if(isValid(context.left)) {
-		return charMatches && leftMatches;
+		return charMatches && leftMatches && chanceMatches;
 	} else if(isValid(context.right)) {
-		return charMatches && rightMatches;
+		return charMatches && rightMatches && chanceMatches;
 	} else {
-		return charMatches;
+		return charMatches && chanceMatches;
 	}
 }
 

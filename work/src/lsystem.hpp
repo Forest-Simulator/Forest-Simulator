@@ -15,12 +15,14 @@ namespace lsys {
 		char character;
 		RuleContext context;
 		char invalid = 'Z';
+		float chance = 0.0;
 
 		bool isValid(char);
 	public:
 		std::string transform;
 
 		Rule(char, std::string);
+		Rule(char, std::string, float);
 		Rule(char, std::string, RuleContext);
 		~Rule();
 		bool matches(char, char, char);

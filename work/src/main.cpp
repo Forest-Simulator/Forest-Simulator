@@ -155,7 +155,7 @@ void initTrees() {
 	// };
 
 	vector<lsys::Rule> rules = {
-		lsys::Rule('F', "FF[+/F-/F-/F]-///////[-/F+/F+/F]")
+		lsys::Rule('F', "FF-[/+F-F-FS]+[\\-F+F+FS]")
 	};
 
 	// vector<lsys::Rule> rules = {
@@ -167,11 +167,12 @@ void initTrees() {
 
 	lsys::LSystem l = lsys::LSystem("F", rules);
 	vector<string> s;
-	for(int i = 0; i < 2; i++) {
-		s = l.generate();	
+	for(int i = 0; i < 3; i++) {
+		s = l.generate();
 	}
 
-	t = new tree::Tree(s, 25.0f, 0.2f);
+	float startingLength = math::random(1.0, 3.0);
+	t = new tree::Tree(s, 25.0f, 2.0);
 }
 
 void initBoids(){
@@ -225,13 +226,13 @@ void renderObjects(int width, int height) {
 		glPopMatrix();
 
 		glPushMatrix();
-			glTranslatef(0.0, 5.0, 0.0);
+			// glTranslatef(0.0, 5.0, 0.0);
 			treeMaterial();
 			t->render();
 		glPopMatrix();
 
-		boidMaterial();
-		boid->render();
+		// boidMaterial();
+		// boid->render();
 
 
 	glPopMatrix();

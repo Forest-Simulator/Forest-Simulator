@@ -15,10 +15,6 @@ struct triangle{
 
 class Boid{
 private:
-	cgra::vec3 position;
-	cgra::vec3 velocity;
-	cgra::vec3 destination;
-
 	vector<triangle> triangles;
 
 	GLuint m_displayList = 0;
@@ -28,6 +24,17 @@ private:
 	void process(triangle tri);
 
 public:
+	cgra::vec3 position;
+	cgra::vec3 velocity;
+	cgra::vec3 destination;
+
+	Boid* left;
+	Boid* right;
+	Boid* parent;
+
+	bool emptyLeft = true;
+	bool emptyRight = true;
+
 	Boid(cgra::vec3 position);
 	void render();
 };

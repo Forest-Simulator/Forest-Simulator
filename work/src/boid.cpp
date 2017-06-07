@@ -83,11 +83,18 @@ void Boid::createDisplayList()
 
 void Boid::render(){
 	glPushMatrix();
+
 	glTranslatef(position.x, position.y, position.z);
+
+	vec3 axis = cross(velocity, vec3(0, 0, 1));
+	glRotatef(degrees(acos(dot(velocity, vec3(0, 0, 1)))), axis.x, axis.y, axis.z);
+	
 	glColor3f(1.0, 0.0, 0.0);
 
 	glShadeModel(GL_SMOOTH);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	
 	glCallList(m_displayList);
+	
 	glPopMatrix();
 }

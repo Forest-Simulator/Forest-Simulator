@@ -12,6 +12,7 @@ SET(headers
 	"lsystem.hpp"
 	"tree.hpp"
 	"boid.hpp"
+	"flock.hpp"
 )
 
 
@@ -22,6 +23,7 @@ SET(sources
 	"lsystem.cpp"
 	"tree.cpp"
 	"boid.cpp"
+	"flock.cpp"
 )
 
 # Add executable target and link libraries

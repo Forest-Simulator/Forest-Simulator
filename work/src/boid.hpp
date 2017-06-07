@@ -1,5 +1,3 @@
-#pragma once
-
 #include "cgra_math.hpp"
 #include "opengl.hpp"
 

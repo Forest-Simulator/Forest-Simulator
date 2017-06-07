@@ -1,15 +1,13 @@
-#pragma once
-
 #include "cgra_math.hpp"
 #include "opengl.hpp"
-#include "boids.hpp"
+#include "boid.hpp"
 
 using namespace std;
 using namespace cgra;
 
 class Flock{
 private:
-	Boid leader;
+	Boid leader = Boid(vec3(0, 0, 0));
 	vector<Boid> boids;
 	vec3 destination;
 
@@ -20,8 +18,9 @@ private:
 	cgra::vec3 separate(Boid b);
 	cgra::vec3 align(Boid b);
 	
-	void arrange(Boid b);
+	void arrange(Boid node, Boid b);
 public:
 	Flock(int size);
 	void setDestination(vec3 dest);
-} 
+	void update();
+};

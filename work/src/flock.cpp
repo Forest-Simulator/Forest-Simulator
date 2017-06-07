@@ -1,16 +1,16 @@
-#pragma once
+#include <cmath>
+#include <cstdlib>
 
 #include "cgra_math.hpp"
-#include "opengl.hpp"
 #include "flock.hpp"
+//#include "boid.hpp"
 
 using namespace std;
 using namespace cgra;
 
 Flock::Flock(int size){
-	leader = boid(vec3(0, 0, 0));
 	for (int i = 0; i < size - 1; ++i){
-		boid b = boid(vec3(rand() % 10, rand() % 10, rand() % 10))
+		Boid b = Boid(vec3(rand() % 10, rand() % 10, rand() % 10));
 		boids.push_back(b);
 		arrange(leader, b);
 	}
@@ -22,7 +22,7 @@ void Flock::update(){
 	int s = boids.size();
 	for(int i = 0; i < s; ++i){
 		steer(boids[i]);
-		boids[i].destination = boids[i].parent.position;
+		boids[i].destination = boids[i].parent->position;
 	}
 }
 
@@ -31,11 +31,12 @@ void Flock::steer(Boid b){
 	v += align(b);
 	v += separate(b);
 
+	b.velocity += v;
 	if(length(v) > max_speed){
-		v = v*(max_speed/length(v));
+		b.velocity = b.velocity*(max_speed/length(v));
 	}
 
-
+	b.position += b.velocity;
 }
 
 vec3 Flock::align(Boid b){
@@ -49,8 +50,8 @@ vec3 Flock::separate(Boid b){
 
 	int s = boids.size();
 	for(int i = 0; i < s; ++i){
-		if(boids[i] != b){
-			float distance = distance(b.position, boids[i].position);
+		if(&boids[i] != &b){
+			float distance = length(b.position - boids[i].position);
 
 			if(distance < minimum_separation){
 				vec3 force = b.position - boids[i].position;
@@ -71,25 +72,25 @@ void Flock::setDestination(vec3 dest){
 	destination = dest;
 }
 
-void arrange(Boid node, Boid b){
+void Flock::arrange(Boid node, Boid b){
 	if(node.emptyLeft){
-		node.left = b;
-		node.emptyLeft = b;
-		b.parent = node;
+		node.left = &b;
+		node.emptyLeft = false;
+		b.parent = &node;
 		return;
 	}
 	else if(node.emptyRight){
-		node.right = b;
+		node.right = &b;
 		node.emptyRight = false;
-		b.parent = node;
+		b.parent = &node;
 		return;
 	}
 	else{
 		if(rand()%2){
-			arrange(node.left, b);
+			arrange(*node.left, b);
 		}
 		else{
-			arrange(node.right, b);
+			arrange(*node.right, b);
 		}
 	}
 }

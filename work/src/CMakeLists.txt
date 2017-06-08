@@ -11,6 +11,7 @@ SET(headers
 	"heightmap.hpp"
 	"lsystem.hpp"
 	"tree.hpp"
+	"treefactory.hpp"
 	"boid.hpp"
 	"flock.hpp"
 )
@@ -22,6 +23,7 @@ SET(sources
 	"heightmap.cpp"
 	"lsystem.cpp"
 	"tree.cpp"
+	"treefactory.cpp"
 	"boid.cpp"
 	"flock.cpp"
 )

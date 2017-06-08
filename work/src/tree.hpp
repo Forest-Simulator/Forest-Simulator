@@ -1,3 +1,5 @@
+#pragma once
+
 #include <map>
 #include <stack>
 
@@ -40,6 +42,7 @@ namespace tree {
 		cgra::vec3 getCrossProductOfZAxisAndHeading();
 		float getAngleBetweenZAxisAndHeading();
 	public:
+		Tree();
 		Tree(std::vector<std::string>, float, float);
 		void render();
 	};

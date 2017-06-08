@@ -11,6 +11,10 @@ using namespace cgra;
 using namespace std;
 using namespace tree;
 
+Tree::Tree() {
+	
+}
+
 Tree::Tree(vector<string> s, float a, float l) {
 	strings = s;
 	angle = a;

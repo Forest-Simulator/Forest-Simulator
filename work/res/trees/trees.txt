@@ -1,0 +1,27 @@
+start
+name		Pretend
+axiom		F
+startLength	1.0 3.0
+branchAngle	25.0
+probability	0.2
+rulestart
+	match		F
+	transform	FF-[/+F-F-FS]+[\\-F+F+FS]
+ruleend
+rulestart
+	match		S
+	transform	SS
+ruleend
+end
+
+start
+name		Next
+axiom		F
+startLength	1.0 3.0
+branchAngle	15.0
+probability	0.8
+rules [{
+	match		F
+	transform	FF-[/+F-F-FS]+[\\-F+F+FS]
+}]
+end

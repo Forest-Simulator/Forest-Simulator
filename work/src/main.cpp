@@ -22,6 +22,7 @@
 #include "heightmap.hpp"
 #include "lsystem.hpp"
 #include "tree.hpp"
+#include "treefactory.hpp"
 #include "boid.hpp"
 
 using namespace std;
@@ -50,6 +51,7 @@ float g_zoom = 1.0;
 // Base Heightmap to be rendered upon
 //
 hmap::Heightmap* heightmap;
+tree::TreeFactory* treeFactory;
 tree::Tree* t;
 
 //Flock of birds
@@ -159,10 +161,10 @@ void initTrees() {
 	};
 
 	// vector<lsys::Rule> rules = {
-	// 	lsys::Rule('a', "[[&sl!a]/////'[&sl!a]///////[&sl!a]]"),
-	// 	lsys::Rule('s', "Sl"),
+	// 	lsys::Rule('F', "F[[&sl!F]/////'[&sl!F]///////[&sl!F]]"),
+	// 	lsys::Rule('s', "[\\FS]"),
 	// 	lsys::Rule('S', "S/////s"),
-	// 	lsys::Rule('l', "['''^^{-S+S+S-|-S+S+S}]")
+	// 	lsys::Rule('l', "S")
 	// };
 
 	lsys::LSystem l = lsys::LSystem("F", rules);
@@ -173,6 +175,8 @@ void initTrees() {
 
 	float startingLength = math::random(1.0, 3.0);
 	t = new tree::Tree(s, 25.0f, 2.0);
+
+	treeFactory = new tree::TreeFactory("./work/res/trees/trees.txt");
 }
 
 void initBoids(){

@@ -5,17 +5,31 @@
 #include <stdexcept>
 #include <vector>
 
+#include "cgra_math.hpp"
 #include "lsystem.hpp"
 #include "tree.hpp"
 #include "treefactory.hpp"
 
+using namespace cgra;
 using namespace lsys;
 using namespace std;
 using namespace tree;
 
+TreeGenerator::TreeGenerator() {}
+
+Tree* TreeGenerator::generate() {
+	vector<string> s;
+	for(int i = 0; i < generations; i++) {
+		s = lsystem.generate();
+	}
+	
+	float sl = math::random(startLength[0], startLength[1]);
+
+	return new Tree(s, branchAngle, sl);
+}
+
 TreeFactory::TreeFactory(string filename) {
 	readFile(filename);
-	
 }
 
 void TreeFactory::readFile(string filename) {
@@ -26,19 +40,13 @@ void TreeFactory::readFile(string filename) {
 		throw runtime_error("Error :: could not open file.");
 	}
 
-	// Values to save
-	string name;
-	string axiom;
-	vector<float> startLength;
-	float branchAngle;
-	float probability;
+	TreeGenerator t;
 
 	char match;
 	string transform;
-
-	Tree t;
-	LSystem l;
-	vector<Rule> rules;
+	char rightcontext = 'Z';
+	char leftcontext = 'Z';
+	float rulechance = 0.0;
 
 	while(objFile.good()) {
 		string line;
@@ -58,40 +66,58 @@ void TreeFactory::readFile(string filename) {
 		}
 
 		if(key == "start") {
-			// cout << "start of tree" << endl;
+			t = TreeGenerator();
 		} else if(key == "name") {
-			name = values[0];
+			t.name = values[0];
 		} else if(key == "axiom") {
-			axiom = values[0];
+			t.axiom = values[0];
 		} else if(key == "startLength") {
 			float lower = stof(values[0]);
 			float upper = stof(values[1]);
-			startLength.push_back(lower);
-			startLength.push_back(upper);
+			t.startLength.push_back(lower);
+			t.startLength.push_back(upper);
 		} else if(key == "branchAngle") {
-			branchAngle = stof(values[0]);
+			t.branchAngle = stof(values[0]);
 		} else if(key == "probability") {
-			probability = stof(values[0]);
+			t.probability = stof(values[0]);
+		} else if(key == "generations") {
+			t.generations = stof(values[0]);
 		} else if(key == "rulestart") {
-			rules.clear();
-			// cout << "new rule match" << endl;
-			cout << "start of rule" << endl;
+			// rules.clear();
 		} else if(key == "match") {
 			match = values[0][0];
 		} else if(key == "transform") {
 			transform = values[0];
+		} else if(key == "rulechance") {
+			rulechance = stof(values[0]);
+		} else if(key == "rightcontext") {
+			rightcontext = values[0][0];
+		} else if(key == "leftcontext") {
+			leftcontext = values[0][0];
 		} else if(key == "ruleend") {
-			Rule r = Rule(match, transform);
-			rules.push_back(r);
+			Rule r;
+			if(rulechance != 0.0) {
+				r = Rule(match, transform, rulechance);
+			} else if(rightcontext != 'Z' || leftcontext != 'Z') {
+				RuleContext rc;
+				rc.right = rightcontext;
+				rc.left = leftcontext;
+				r = Rule(match, transform, rc);
+			} else {
+				r = Rule(match, transform);
+			}
+			t.rules.push_back(r);
 		} else if(key == "end") {
-			l = LSystem(axiom, rules);
-			cout << "end of tree definition" << endl;
+			t.lsystem = LSystem(t.axiom, t.rules);
+			generators.push_back(t);
 		}
 	}
+}
 
-	cout << "name: " << name << endl;
-	cout << "startLength: " << startLength[0] << " " << startLength[1] << endl;
-	cout << "branchAngle: " << branchAngle << endl;
-	cout << "probability: " << probability << endl;
-	cout << "rules: " << rules.size() << endl;
+Tree* TreeFactory::generate() {
+	
+	int rand = math::random(0, int(generators.size()));
+	TreeGenerator tg = generators[rand];
+	
+	return tg.generate();
 }

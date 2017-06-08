@@ -21,11 +21,13 @@ namespace lsys {
 	public:
 		std::string transform;
 
+		Rule();
 		Rule(char, std::string);
 		Rule(char, std::string, float);
 		Rule(char, std::string, RuleContext);
 		~Rule();
 		bool matches(char, char, char);
+		void print();
 	};
 
 
@@ -36,6 +38,7 @@ namespace lsys {
 		std::string currentString = "";
 		std::string nextString = "";
 	public:
+		LSystem();
 		LSystem(std::string, std::vector<Rule>);
 		~LSystem();
 		std::vector<std::string> generate();

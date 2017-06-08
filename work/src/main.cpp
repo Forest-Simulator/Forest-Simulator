@@ -156,10 +156,6 @@ void initTrees() {
 	// 	lsys::Rule('F', "FF")
 	// };
 
-	vector<lsys::Rule> rules = {
-		lsys::Rule('F', "FF-[/+F-F-FS]+[\\-F+F+FS]")
-	};
-
 	// vector<lsys::Rule> rules = {
 	// 	lsys::Rule('F', "F[[&sl!F]/////'[&sl!F]///////[&sl!F]]"),
 	// 	lsys::Rule('s', "[\\FS]"),
@@ -167,16 +163,9 @@ void initTrees() {
 	// 	lsys::Rule('l', "S")
 	// };
 
-	lsys::LSystem l = lsys::LSystem("F", rules);
-	vector<string> s;
-	for(int i = 0; i < 3; i++) {
-		s = l.generate();
-	}
-
-	float startingLength = math::random(1.0, 3.0);
-	t = new tree::Tree(s, 25.0f, 2.0);
-
 	treeFactory = new tree::TreeFactory("./work/res/trees/trees.txt");
+
+	t = treeFactory->generate();
 }
 
 void initBoids(){

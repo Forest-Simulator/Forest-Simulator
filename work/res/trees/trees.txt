@@ -4,6 +4,7 @@ axiom		F
 startLength	1.0 3.0
 branchAngle	25.0
 probability	0.2
+generations	2
 rulestart
 	match		F
 	transform	FF-[/+F-F-FS]+[\\-F+F+FS]
@@ -20,8 +21,9 @@ axiom		F
 startLength	1.0 3.0
 branchAngle	15.0
 probability	0.8
-rules [{
+generations	2
+rulestart
 	match		F
-	transform	FF-[/+F-F-FS]+[\\-F+F+FS]
-}]
+	transform	FF-[/+F-F-F]+[\\-F+F+F]
+ruleend
 end

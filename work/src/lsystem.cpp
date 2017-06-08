@@ -9,6 +9,10 @@ using namespace cgra;
 using namespace lsys;
 using namespace std;
 
+Rule::Rule() {
+	
+}
+
 Rule::Rule(char c, std::string t) {
 	character = c;
 	transform = t;
@@ -57,6 +61,16 @@ bool Rule::matches(char characterMatch, char leftMatch, char rightMatch) {
 		return charMatches && chanceMatches;
 	}
 }
+
+void Rule::print() {
+	cout << "character: " << character << endl;
+	cout << "transform: " << transform << endl;
+	cout << "chance: " << chance << endl;
+	cout << "rightcontext: " << context.right << endl;
+	cout << "leftcontext: " << context.left << endl;
+}
+
+LSystem::LSystem() {}
 
 LSystem::LSystem(string axiom, vector<Rule> r) {
 	strings.push_back(axiom);

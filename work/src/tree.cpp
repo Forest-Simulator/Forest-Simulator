@@ -51,7 +51,6 @@ void Tree::render() {
 	glRotatef(-90, 1.0, 0.0, 0.0);
 	for(int i = 0; i < int(s.size()); i++) {
 		char c = s.at(i);
-
 		// Get the corresponding function for character
 		// c and call it on this object
 		RenderFunction func = functionMap.at(c);

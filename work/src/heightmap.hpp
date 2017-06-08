@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 
+#include "opengl.hpp"
 #include "cgra_math.hpp"
 
 namespace hmap {
@@ -54,12 +55,15 @@ namespace hmap {
 		std::vector<cgra::vec3> normals;
 		std::vector<Triangle> triangles;
 
+		GLuint displayList = 0;
+
 		void constructHelper();
 		void generateCorners(int, int);
 		void calculateDiamondCenters(Point, int);
 		void calculateSquareCenter(Point, int);
 		void calculateDiamondCenter(Point, int);
-		void makeList();
+		void makeLists();
+		void createDisplayList();
 
 		float getAverageOfSquare(Point, int);
 		float getAverageOfDiamond(Point, int);
@@ -81,7 +85,7 @@ namespace hmap {
 		float getAt(Point);
 		void setAt(Point, float);
 		void printAt(Point);
-		
+
 		int getSize();
 		std::vector<cgra::vec3> getVertices();
 	};

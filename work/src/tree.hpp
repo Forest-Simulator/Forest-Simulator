@@ -3,6 +3,7 @@
 #include <map>
 #include <stack>
 
+#include "opengl.hpp"
 #include "cgra_math.hpp"
 
 namespace tree {
@@ -24,6 +25,8 @@ namespace tree {
 		cgra::vec3 up;
 		cgra::vec3 left;
 
+		GLuint displayList = 0;
+
 		void drawBranch();
 		void drawLeaf();
 		void moveForward();
@@ -41,6 +44,7 @@ namespace tree {
 		void headingEnd();
 		cgra::vec3 getCrossProductOfZAxisAndHeading();
 		float getAngleBetweenZAxisAndHeading();
+		void createDisplayList();
 	public:
 		Tree();
 		Tree(std::vector<std::string>, float, float);

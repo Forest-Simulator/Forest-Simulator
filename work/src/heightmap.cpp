@@ -11,9 +11,9 @@
 #include "opengl.hpp"
 #include "heightmap.hpp"
 
-using namespace std;
 using namespace cgra;
 using namespace hmap;
+using namespace std;
 
 Heightmap::Heightmap() {
 	// Default the size to 5 if one is not provided
@@ -54,31 +54,7 @@ void Heightmap::constructHelper() {
 }
 
 void Heightmap::render() {
-	int start = 0;
-	int end = size - 1;
-	int distance = (end - start);
-	float xyModifier = float(distance / 2);
-
-	glBegin(GL_TRIANGLES);
-
-	for(int i = 0; i < int(triangles.size()); i++) {
-		Triangle t = triangles[i];
-		vec3 n1 = normals[t.normals[0]];
-		vec3 n2 = normals[t.normals[1]];
-		vec3 n3 = normals[t.normals[2]];
-		glNormal3f(n1.x, n1.y, n1.z);
-		glNormal3f(n2.x, n2.y, n2.z);
-		glNormal3f(n3.x, n3.y, n3.z);
-
-		vec3 v1 = vertices[t.vertices[0]];
-		vec3 v2 = vertices[t.vertices[1]];
-		vec3 v3 = vertices[t.vertices[2]];
-		glVertex3f(v1.x, v1.y, v1.z);
-		glVertex3f(v2.x, v2.y, v2.z);
-		glVertex3f(v3.x, v3.y, v3.z);
-	}
-
-	glEnd();
+	glCallList(displayList);
 }
 
 void Heightmap::generateHeightmap() {
@@ -115,7 +91,7 @@ void Heightmap::generateHeightmap() {
 
 	// Once the heightmap has been generated, turn it into a set of
 	// vertices, normals and triangles.
-	makeList();
+	makeLists();
 }
 
 void Heightmap::generateCorners(int start, int end) {
@@ -150,7 +126,7 @@ void Heightmap::calculateDiamondCenters(Point square, int distance) {
 	}
 }
 
-void Heightmap::makeList() {
+void Heightmap::makeLists() {
 	float xyModifier = float((size-1) / 2);
 
 	for(int z = 0; z < size; z++) {
@@ -201,9 +177,35 @@ void Heightmap::makeList() {
 			triangles[i].normals.push_back(normals.size() - 1);
 		}
 	}
+
+	createDisplayList();
 }
 
+void Heightmap::createDisplayList() {
+	displayList = glGenLists(1);
+	glNewList(displayList, GL_COMPILE);
+	glBegin(GL_TRIANGLES);
 
+	for(int i = 0; i < int(triangles.size()); i++) {
+		Triangle t = triangles[i];
+		vec3 n1 = normals[t.normals[0]];
+		vec3 n2 = normals[t.normals[1]];
+		vec3 n3 = normals[t.normals[2]];
+		glNormal3f(n1.x, n1.y, n1.z);
+		glNormal3f(n2.x, n2.y, n2.z);
+		glNormal3f(n3.x, n3.y, n3.z);
+
+		vec3 v1 = vertices[t.vertices[0]];
+		vec3 v2 = vertices[t.vertices[1]];
+		vec3 v3 = vertices[t.vertices[2]];
+		glVertex3f(v1.x, v1.y, v1.z);
+		glVertex3f(v2.x, v2.y, v2.z);
+		glVertex3f(v3.x, v3.y, v3.z);
+	}
+
+	glEnd();
+	glEndList();
+}
 
 void Heightmap::calculateDiamondCenter(Point diamondCenter, int distance) {
 	float averageOfDiamond = getAverageOfDiamond(diamondCenter, distance);

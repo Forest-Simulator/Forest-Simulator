@@ -52,6 +52,7 @@ float g_zoom = 1.0;
 //
 hmap::Heightmap* heightmap;
 tree::TreeFactory* treeFactory;
+tree::Tree* t;
 vector<tree::Tree*> trees;
 
 //Flock of birds
@@ -151,10 +152,18 @@ void initHeightmap() {
 }
 
 void initTrees() {
+	
 	treeFactory = new tree::TreeFactory("./work/res/trees/trees.txt");
-	for(int x = 0; x < heightmap->getSize() / 4; x++) {
-		trees.push_back(treeFactory->generate());
-	}
+	t = treeFactory->generate();
+
+	// for(int x = 0; x < heightmap->getSize() / 4; x++) {
+	// 	trees.push_back(treeFactory->generate());
+	// }
+
+	// Trees have been generated, so release the treeFactory object
+	// from memory and set its pointer to null
+	delete treeFactory;
+	treeFactory = nullptr;
 }
 
 void initBoids(){
@@ -195,7 +204,6 @@ void boidMaterial() {
 void renderObjects(int width, int height) {
 	// Render a single square as our geometry
 	// You would normally render your geometry here
-
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 		
@@ -208,21 +216,22 @@ void renderObjects(int width, int height) {
 		glPopMatrix();
 
 		glPushMatrix();
-			int size = heightmap->getSize();
-			int halfSize = size / 2;
-			int count = 0;
-			glTranslatef(-halfSize, 0.0, halfSize);
-			// treeMaterial();
-			for(tree::Tree* t : trees) {
-				glTranslatef(4.0, 0.0, 0.0);
-				t->render();
-				glTranslatef(0.0, 0.0, -4.0);
-				count++;
-			}
+			// int size = heightmap->getSize();
+			// int halfSize = size / 2;
+			// int count = 0;
+			// glTranslatef(-halfSize, 0.0, halfSize);
+			// for(tree::Tree* t : trees) {
+			// 	glTranslatef(4.0, 0.0, 0.0);
+			// 	t->render();
+			// 	glTranslatef(0.0, 0.0, -4.0);
+			// 	count++;
+			// }
+
+			t->render();
 		glPopMatrix();
 
-		// boidMaterial();
-		// boid->render();
+		boidMaterial();
+		boid->render();
 
 
 	glPopMatrix();

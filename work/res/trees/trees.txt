@@ -1,7 +1,7 @@
 start
 name		Pretend
 axiom		F
-startLength	1.0 3.0
+startLength	1.0 2.0
 branchAngle	25.0
 probability	0.2
 generations	2
@@ -9,21 +9,23 @@ rulestart
 	match		F
 	transform	FF-[/+F-F-FS]+[\\-F+F+FS]
 ruleend
-rulestart
-	match		S
-	transform	SS
-ruleend
 end
 
 start
 name		Next
 axiom		F
-startLength	1.0 3.0
+startLength	1.0 4.0
 branchAngle	15.0
 probability	0.8
-generations	2
+generations	3
 rulestart
 	match		F
-	transform	FF-[/+F-F-F]+[\\-F+F+F]
+	transform	F[/+F][\\-FS]
+	chance		0.4
+ruleend
+rulestart
+	match		F
+	transform	F[\\-F][+/FS]
+	chance		0.6
 ruleend
 end

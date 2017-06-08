@@ -52,7 +52,7 @@ float g_zoom = 1.0;
 //
 hmap::Heightmap* heightmap;
 tree::TreeFactory* treeFactory;
-tree::Tree* t;
+vector<tree::Tree*> trees;
 
 //Flock of birds
 //
@@ -146,26 +146,15 @@ void initLight() {
 
 
 void initHeightmap() {
-	heightmap = new hmap::Heightmap(6);
+	heightmap = new hmap::Heightmap(4);
 	heightmap->generateHeightmap();
 }
 
 void initTrees() {
-	// vector<lsys::Rule> rules = {
-	// 	lsys::Rule('X', "F[-X][X]F[-X]+FX"),
-	// 	lsys::Rule('F', "FF")
-	// };
-
-	// vector<lsys::Rule> rules = {
-	// 	lsys::Rule('F', "F[[&sl!F]/////'[&sl!F]///////[&sl!F]]"),
-	// 	lsys::Rule('s', "[\\FS]"),
-	// 	lsys::Rule('S', "S/////s"),
-	// 	lsys::Rule('l', "S")
-	// };
-
 	treeFactory = new tree::TreeFactory("./work/res/trees/trees.txt");
-
-	t = treeFactory->generate();
+	for(int x = 0; x < heightmap->getSize() / 4; x++) {
+		trees.push_back(treeFactory->generate());
+	}
 }
 
 void initBoids(){
@@ -219,9 +208,17 @@ void renderObjects(int width, int height) {
 		glPopMatrix();
 
 		glPushMatrix();
-			// glTranslatef(0.0, 5.0, 0.0);
-			treeMaterial();
-			t->render();
+			int size = heightmap->getSize();
+			int halfSize = size / 2;
+			int count = 0;
+			glTranslatef(-halfSize, 0.0, halfSize);
+			// treeMaterial();
+			for(tree::Tree* t : trees) {
+				glTranslatef(4.0, 0.0, 0.0);
+				t->render();
+				glTranslatef(0.0, 0.0, -4.0);
+				count++;
+			}
 		glPopMatrix();
 
 		// boidMaterial();

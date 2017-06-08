@@ -81,7 +81,8 @@ namespace hmap {
 		float getAt(Point);
 		void setAt(Point, float);
 		void printAt(Point);
-
+		
+		int getSize();
 		std::vector<cgra::vec3> getVertices();
 	};
 }

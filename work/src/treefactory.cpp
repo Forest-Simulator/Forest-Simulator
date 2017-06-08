@@ -115,9 +115,7 @@ void TreeFactory::readFile(string filename) {
 }
 
 Tree* TreeFactory::generate() {
-	
 	int rand = math::random(0, int(generators.size()));
 	TreeGenerator tg = generators[rand];
-	
 	return tg.generate();
 }

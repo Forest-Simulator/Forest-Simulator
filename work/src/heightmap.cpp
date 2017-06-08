@@ -22,7 +22,6 @@ Heightmap::Heightmap() {
 }
 
 Heightmap::Heightmap(int mapSize) {
-	// for(int i = 5; i < map)
 	int counter = 1;
 	int newSize = 5;
 	while(counter < mapSize) {
@@ -41,7 +40,11 @@ Heightmap::Heightmap(int mapSize, float mapSeed) {
 
 Heightmap::~Heightmap() {  }
 
-vector<vec3> Heightmap::getVertices(){
+int Heightmap::getSize() {
+	return size;
+}
+
+vector<vec3> Heightmap::getVertices() {
 	return vertices;
 }
 

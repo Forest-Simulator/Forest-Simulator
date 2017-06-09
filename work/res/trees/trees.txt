@@ -18,6 +18,6 @@ rulestart
 ruleend
 rulestart
 	match		L
-	transform	[’’’∧∧{-f+f+f-|-f+f+f}]
+	transform	[’’’∧∧{-g+g+g-|-g+g+g}]
 ruleend
 end

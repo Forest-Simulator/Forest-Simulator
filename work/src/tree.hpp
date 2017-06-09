@@ -8,6 +8,13 @@
 
 namespace tree {
 
+	struct TreeState {
+		float length;
+		int colourIndex;
+		cgra::vec3 heading = cgra::vec3(0, 0, 1);
+		cgra::vec3 position;
+	};
+
 	// Forward declare Tree so that pointers to 
 	// member-methods can be constructed
 	class Tree;
@@ -17,9 +24,11 @@ namespace tree {
 	class Tree {
 	private:
 		float angle;
-		float length;
 		std::vector<std::string> strings;
-		std::stack<float> lengthStack;
+
+		TreeState currentState;
+		std::stack<TreeState> stateStack;
+
 		std::map<char, RenderFunction> functionMap;
 		cgra::vec3 heading;
 		cgra::vec3 up;
@@ -39,6 +48,10 @@ namespace tree {
 		void pushMatrix();
 		void popMatrix();
 		void turnAround();
+		void increaseColourIndex();
+		void decreaseColourIndex();
+		void increaseLineWidth();
+		void decreaseLineWidth();
 
 		void headingBegin();
 		void headingEnd();

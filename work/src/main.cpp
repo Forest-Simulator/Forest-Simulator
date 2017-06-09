@@ -211,8 +211,8 @@ void renderObjects(int width, int height) {
 		glColor3f(1.0, 0.0, 0.0);
 
 		glPushMatrix();
-			grassMaterial();
-			heightmap->render();
+			// grassMaterial();
+			// heightmap->render();
 		glPopMatrix();
 
 		glPushMatrix();

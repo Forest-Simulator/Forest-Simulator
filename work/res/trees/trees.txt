@@ -1,27 +1,22 @@
 start
-axiom		X
-startLength	0.5 1.0
-branchAngle	25.0
-generations	4
+axiom		A
+startLength	1.0 1.0
+branchAngle	22.5
+generations	3
 rulestart
-	match		X
-	transform	F[\\\\-X][//X]F[^-X]+F&X
+	match		A
+	transform	[&FL!A]/////’[&FL!A]///////’[&FL!A]
 ruleend
 rulestart
 	match		F
-	transform	FF
+	transform	S ///// F
 ruleend
-end
-
-start
-name		Pretend
-axiom		F
-startLength	1.0 2.0
-branchAngle	25.0
-probability	0.2
-generations	2
 rulestart
-	match		F
-	transform	FF-[/+F-F-FS]+[\\-F+F+FS]
+	match		S
+	transform	F L
+ruleend
+rulestart
+	match		L
+	transform	[’’’∧∧{-f+f+f-|-f+f+f}]
 ruleend
 end

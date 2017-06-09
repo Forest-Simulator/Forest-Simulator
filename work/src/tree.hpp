@@ -35,13 +35,13 @@ namespace tree {
 		std::stack<TreeState> stateStack;
 		std::map<char, RenderFunction> functionMap;
 		std::vector<cgra::vec3> branchVertices;
-		std::vector<cgra::vec3> leafVertices;
 
 		GLuint displayList = 0;
 
 		void drawBranch();
 		void drawLeaf();
 		void moveForward();
+		void moveForwardAndPlaceVertex();
 		void turnLeft();
 		void turnRight();
 		void pitchUp();
@@ -50,6 +50,8 @@ namespace tree {
 		void rollRight();
 		void pushState();
 		void popState();
+		void beginPoly();
+		void endPoly();
 		void turnAround();
 		void increaseColourIndex();
 		void decreaseColourIndex();

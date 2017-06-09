@@ -144,10 +144,14 @@ Tree::Tree(vec3 startingPos, vector<string> s, float a, float l) {
 
 	functionMap = {
 		{'F', &Tree::drawBranch},
+		{'A', &Tree::drawBranch},
 		// {'f', &Tree::moveForward},
-		{'S', &Tree::drawLeaf},
+		{'f', &Tree::moveForwardAndPlaceVertex},
+		// {'S', &Tree::drawLeaf},
 		{'[', &Tree::pushState},
 		{']', &Tree::popState},
+		{'{', &Tree::beginPoly},
+		{'}', &Tree::endPoly},
 		{'+', &Tree::turnLeft},
 		{'-', &Tree::turnRight},
 		{'^', &Tree::pitchUp},
@@ -164,11 +168,24 @@ Tree::Tree(vec3 startingPos, vector<string> s, float a, float l) {
 	createDisplayList();
 }
 
+void Tree::createDisplayList() {
+	
+
+	displayList = glGenLists(1);
+	glNewList(displayList, GL_COMPILE);
+
+	glRotatef(-90, 1.0, 0.0, 0.0);
+
+	createFromString();
+	
+	glEndList();
+}
+
 void Tree::createFromString() {
 	string s = strings.back();
 
 	// state.heading = rotate(vec3(1, 0, 0), vec3(1, 0, 0), -90.0);
-	cout << state.heading << endl;
+	cout << s << endl;
 
 	for(int i = 0; i < int(s.size()); i++) {
 		char c = s.at(i);
@@ -179,44 +196,6 @@ void Tree::createFromString() {
 			(this->*func)();
 		}
 	}
-}
-
-void Tree::createDisplayList() {
-	createFromString();
-
-	displayList = glGenLists(1);
-	glNewList(displayList, GL_COMPILE);
-
-	glRotatef(-90, 1.0, 0.0, 0.0);
-	
-	drawAxis();
-
-	tMaterial();
-	for(int i = 0; i < int(branchVertices.size()); i += 2)  {
-		vec3 posStart = branchVertices[i];
-		vec3 posEnd = branchVertices[i+1];
-		glBegin(GL_LINES);
-			glVertex3f(posStart.x, posStart.y, posStart.z);
-			glVertex3f(posEnd.x, posEnd.y, posEnd.z);
-		glEnd();
-	}
-
-	greenMaterial();
-	for(int i = 0; i < int(leafVertices.size()); i += 4) {
-		vec3 topLeft = leafVertices[i];
-		vec3 topRight = leafVertices[i+1];
-		vec3 botLeft = leafVertices[i+2];
-		vec3 botRight = leafVertices[i+3];
-
-		glBegin(GL_POLYGON);
-			glVertex3f(topLeft.x, topLeft.y, topLeft.z);
-			glVertex3f(topRight.x, topRight.y, topRight.z);
-			glVertex3f(botLeft.x, botLeft.y, botLeft.z);
-			glVertex3f(botRight.x, botRight.y, botRight.z);
-		glEnd();
-	}
-	
-	glEndList();
 }
 
 void Tree::render() {
@@ -237,16 +216,30 @@ void Tree::drawBranch() {
 
 	branchVertices.push_back(posStart);
 	branchVertices.push_back(posEnd);
+
+	tMaterial();
+	glBegin(GL_LINES);
+		glVertex3f(posStart.x, posStart.y, posStart.z);
+		glVertex3f(posEnd.x, posEnd.y, posEnd.z);
+	glEnd();
 }
 
 void Tree::drawLeaf() {
-	float size = 0.2;
-	vec3 pos = state.position;
+	// float size = 0.2;
+	// vec3 pos = state.position;
 
-	leafVertices.push_back(vec3(pos.x - size, pos.y + size, pos.z));
-	leafVertices.push_back(vec3(pos.x + size, pos.y + size, pos.z));
-	leafVertices.push_back(vec3(pos.x + size, pos.y - size, pos.z));
-	leafVertices.push_back(vec3(pos.x - size, pos.y - size, pos.z));
+	// greenMaterial();
+	// glBegin(GL_POLYGON);
+	// 	glVertex3f(pos.x - size, pos.y + size, pos.z);
+	// 	glVertex3f(pos.x + size, pos.y + size, pos.z);
+	// 	glVertex3f(pos.x + size, pos.y - size, pos.z);
+	// 	glVertex3f(pos.x - size, pos.y - size, pos.z);
+	// glEnd();
+
+	// leafVertices.push_back(vec3(pos.x - size, pos.y + size, pos.z));
+	// leafVertices.push_back(vec3(pos.x + size, pos.y + size, pos.z));
+	// leafVertices.push_back(vec3(pos.x + size, pos.y - size, pos.z));
+	// leafVertices.push_back(vec3(pos.x - size, pos.y - size, pos.z));
 }
 
 void Tree::moveForward() {
@@ -254,6 +247,11 @@ void Tree::moveForward() {
 	vec3 move = state.heading * state.length;
 	vec3 posEnd = translate(posStart, move);
 	state.position = posEnd;
+}
+
+void Tree::moveForwardAndPlaceVertex() {
+	moveForward();
+	glVertex3f(state.position.x, state.position.y, state.position.z);
 }
 
 void Tree::turnLeft() {
@@ -304,6 +302,15 @@ void Tree::pushState() {
 void Tree::popState() {
 	state = stateStack.top();
 	stateStack.pop();
+}
+
+void Tree::beginPoly() {
+	cout << "called" << endl;
+	glBegin(GL_POLYGON);
+}
+
+void Tree::endPoly() {
+	glEnd();
 }
 
 void Tree::increaseColourIndex() {

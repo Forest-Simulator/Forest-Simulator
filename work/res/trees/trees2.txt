@@ -67,3 +67,18 @@ rulestart
 	transform	FF
 ruleend
 end
+
+start
+axiom		X
+startLength	0.5 1.0
+branchAngle	25.0
+generations	4
+rulestart
+	match		X
+	transform	F[\\\\-X][//X]F[^-X]+F&X
+ruleend
+rulestart
+	match		F
+	transform	FF
+ruleend
+end

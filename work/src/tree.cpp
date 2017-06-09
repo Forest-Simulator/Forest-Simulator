@@ -89,16 +89,13 @@ Tree::Tree(vector<string> s, float a, float l) {
 	strings = s;
 	angle = a;
 	currentState.length = l;
-	heading = vec3(0, 0, 1);
-	up = vec3(0, 1, 0);
-	left = vec3(1, 0, 0);
 
 	functionMap = {
 		{'F', &Tree::drawBranch},
 		// {'f', &Tree::moveForward},
 		{'S', &Tree::drawLeaf},
-		{'[', &Tree::pushMatrix},
-		{']', &Tree::popMatrix},
+		{'[', &Tree::pushState},
+		{']', &Tree::popState},
 		{'+', &Tree::turnLeft},
 		{'-', &Tree::turnRight},
 		{'^', &Tree::pitchUp},
@@ -111,46 +108,19 @@ Tree::Tree(vector<string> s, float a, float l) {
 		{'#', &Tree::increaseLineWidth},
 		{'!', &Tree::decreaseLineWidth}
 	};
+
+	createDisplayList();
 }
 
 void Tree::createDisplayList() {
-	/*displayList = glGenLists(1);
+	displayList = glGenLists(1);
 	glNewList(displayList, GL_COMPILE);
-	// glBegin(GL_TRIANGLES);
 
 	string s = strings.back();
 
-	// glRotatef(-90, 1.0, 0.0, 0.0);
-	for(int i = 0; i < int(s.size()); i++) {
-		char c = s.at(i);
-		// Get the corresponding function for character
-		// c and call it on this object
-		RenderFunction func = functionMap.at(c);
-		(this->*func)();
-	}
-	
-	// glEnd();
-	glEndList();*/
-}
-
-void Tree::render() {
-	// Ideally want to do this here:
-	// glPushMatrix();
-		// glRotatef(-90, 1.0, 0.0, 0.0);
-		// glCallList(displayList);
-	// glPopMatrix();
-
-	string s = strings.back();
-
-	// cout << s << endl;
-
-	// glLineWidth(10.0);
-	// glBegin(GL_LINES);
-	glPushMatrix();
 	glRotatef(-90, 1.0, 0.0, 0.0);
 	for(int i = 0; i < int(s.size()); i++) {
 		char c = s.at(i);
-
 		// Get the corresponding function for character
 		// c and call it on this object
 		if(functionMap.find(c) != functionMap.end()) {
@@ -158,6 +128,13 @@ void Tree::render() {
 			(this->*func)();
 		}
 	}
+	
+	glEndList();
+}
+
+void Tree::render() {
+	glPushMatrix();
+		glCallList(displayList);
 	glPopMatrix();
 }
 
@@ -179,14 +156,29 @@ vec3 translate(vec3 start, vec3 translation) {
 	return ns;
 }
 
-vec3 rotate(vec3 start, vec3 rotation, float angle) {
-	vec4 newStart = vec4(start.x, start.y, start.z, 1);
+mat4 makeRotationMatrix(vec3 rotationAxis, float angle) {
+	// Ensure rotation axis is normalized
+	vec3 u = normalize(rotationAxis);
+
+	// Convert angle from degrees to radians
+	float a = radians(angle);
+
+	// Create the rotation matrix based on axis and angle.
+	// See: https://en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_and_angle
 	mat4 rotationMatrix = mat4(
-		vec4(cos(angle), 0, sin(angle), 0),
-		vec4(0, 1, 0, 0),
-		vec4(-sin(angle), 0, cos(angle), 0),
-		vec4(0, 0, 0, 1)
+		vec4(cos(a) + (pow(u.x, 2) * (1 - cos(a))), u.x * u.y * (1 - cos(a)) - u.z * sin(a), u.x * u.y * (1 - cos(a)) + u.y * sin(a), 0.0f),
+		vec4(u.y * u.x * (1 - cos(a)) + u.z * sin(a), cos(a) + pow(u.y, 2) * (1 - cos(a)), u.y * u.x * (1 - cos(a)) - u.x * sin(a), 0.0f),
+		vec4(u.z * u.x * (1 - cos(a)) - u.y * sin(a), u.z * u.y * (1 - cos(a)) + u.x * sin(a), cos(a) + pow(u.z, 2) * (1 - cos(a)), 0.0f),
+		vec4(0.0f, 0.0f, 0.0f, 1.0f)
 	);
+
+	return rotationMatrix;
+}
+
+vec3 rotate(vec3 start, vec3 rotationAxis, float angle) {
+	mat4 rotationMatrix = makeRotationMatrix(rotationAxis, angle);
+
+	vec4 newStart = vec4(start.x, start.y, start.z, 1);
 
 	vec3 ns = vec3(
 		dot(newStart, rotationMatrix[0]),
@@ -194,111 +186,102 @@ vec3 rotate(vec3 start, vec3 rotation, float angle) {
 		dot(newStart, rotationMatrix[2])
 	);
 
-	// cout << start << ", " << ns << endl;
-
 	return ns;
 }
 
 void Tree::drawBranch() {
-	headingBegin();
-
-	float radius = 0.05;
-
 	tMaterial();
 
-	// vec3 posStart = currentState.position;
-
-	vec3 move = heading * currentState.length;
-
-	// vec3 posEnd = translate(posStart, move);
-	// currentState.position = posEnd;
+	vec3 posStart = currentState.position;
+	vec3 move = currentState.heading * currentState.length;
+	vec3 posEnd = translate(posStart, move);
+	currentState.position = posEnd;
 
 
-	// glBegin(GL_LINES);
+	glBegin(GL_LINES);
 
-	// glVertex3f(posStart.x, posStart.y, posStart.z);
-	// glVertex3f(posEnd.x, posEnd.y, posEnd.z);
+	glVertex3f(posStart.x, posStart.y, posStart.z);
+	glVertex3f(posEnd.x, posEnd.y, posEnd.z);
 
-	// glEnd();
-	
-	cgraCylinder(radius, radius, currentState.length, 2, 1);
-	glTranslatef(move.x, move.y, move.z);
-	
-	headingEnd();
+	glEnd();
 }
 
 void Tree::drawLeaf() {
-	headingBegin();
-
 	float size = 0.2;
+	vec3 pos = currentState.position;
+	// vec3 rot = rotate(pos, currentState.heading, angle);
 
-	glPushMatrix();
+	// glPushMatrix();
 	greenMaterial();
 	glBegin(GL_POLYGON);
-		glVertex3f(-size, size, 0);
-		glVertex3f(size, size, 0);
-		glVertex3f(size, -size, 0);
-		glVertex3f(-size, -size, 0);
-	glEnd();
-	glPopMatrix();
+		glVertex3f(pos.x - size, pos.y + size, pos.z);
+		glVertex3f(pos.x + size, pos.y + size, pos.z);
+		glVertex3f(pos.x + size, pos.y - size, pos.z);
+		glVertex3f(pos.x - size, pos.y - size, pos.z);
 
-	headingEnd();
+		// glVertex3f(rot.x - size, rot.y + size, rot.z);
+		// glVertex3f(rot.x + size, rot.y + size, rot.z);
+		// glVertex3f(rot.x + size, rot.y - size, rot.z);
+		// glVertex3f(rot.x - size, rot.y - size, rot.z);
+	glEnd();
+	// glPopMatrix();
 }
 
 void Tree::moveForward() {
-	// headingBegin();
-
-	vec3 move = heading * currentState.length;
-	glTranslatef(move.x, move.y, move.z);
-
-	// headingEnd();
+	vec3 posStart = currentState.position;
+	vec3 move = currentState.heading * currentState.length;
+	vec3 posEnd = translate(posStart, move);
+	currentState.position = posEnd;
 }
 
 void Tree::turnLeft() {
-	vec3 rotStart = currentState.heading;
-	vec3 rotEnd = rotate(rotStart, up, angle);
+	vec3 rotEnd = rotate(currentState.heading, up, angle);
 	currentState.heading = rotEnd;
-
-	// glRotatef(angle, up.x, up.y, up.z);
 }
 
 void Tree::turnRight() {
-	vec3 rotStart = currentState.heading;
-	vec3 rotEnd = rotate(rotStart, up, -angle);
+	vec3 rotEnd = rotate(currentState.heading, up, -angle);
 	currentState.heading = rotEnd;
-
-	glRotatef(-angle, up.x, up.y, up.z);
 }
 
 void Tree::pitchUp() {
-	glRotatef(angle, left.x, left.y, left.z);
+	vec3 rotEnd = rotate(currentState.heading, left, angle);
+	currentState.heading = rotEnd;
 }
 
 void Tree::pitchDown() {
-	glRotatef(-angle, left.x, left.y, left.z);
+	vec3 rotEnd = rotate(currentState.heading, left, -angle);
+	currentState.heading = rotEnd;
 }
 
 void Tree::rollLeft() {
-	glRotatef(angle, heading.x, heading.y, heading.z);
+	// This is not correct. Want to rotate around heading rather
+	// than z axis, but this is difficult.
+	vec3 rotEnd = rotate(currentState.heading, towards, angle);
+	currentState.heading = rotEnd;
 }
 
 void Tree::rollRight() {
-	glRotatef(-angle, heading.x, heading.y, heading.z);
+	// This is not correct. Want to rotate around heading rather
+	// than z axis, but this is difficult.
+	vec3 rotEnd = rotate(currentState.heading, towards, -angle);
+	currentState.heading = rotEnd;
 }
 
 void Tree::turnAround() {
-	glRotatef(180.0, up.x, up.y, up.z);
+	// Flips 180 degrees
+	vec3 rotStart = currentState.heading;
+	vec3 rotEnd = rotate(rotStart, up, 180.0);
+	currentState.heading = rotEnd;
 }
 
-void Tree::pushMatrix() {
-	glPushMatrix();
+void Tree::pushState() {
 	stateStack.push(currentState);
 }
 
-void Tree::popMatrix() {
+void Tree::popState() {
 	currentState = stateStack.top();
 	stateStack.pop();
-	glPopMatrix();
 }
 
 void Tree::increaseColourIndex() {
@@ -320,27 +303,4 @@ void Tree::increaseLineWidth() {
 void Tree::decreaseLineWidth() {
 	float newLength = currentState.length * 0.8;
 	if(newLength > 0.2) currentState.length = newLength;
-}
-
-void Tree::headingBegin() {
-	float a = getAngleBetweenZAxisAndHeading();
-	vec3 c = getCrossProductOfZAxisAndHeading();
-
-	glRotatef(a, c.x, c.y, c.z);
-}
-
-void Tree::headingEnd() {
-	float a = getAngleBetweenZAxisAndHeading();
-	vec3 c = getCrossProductOfZAxisAndHeading();
-
-	glRotatef(-a, c.x, c.y, c.z);
-}
-
-vec3 Tree::getCrossProductOfZAxisAndHeading() {
-	return cross(vec3(0, 0, 1), heading);
-}
-
-float Tree::getAngleBetweenZAxisAndHeading() {
-	float d = dot(vec3(0, 0, 1), heading);
-	return degrees(acos(d));
 }

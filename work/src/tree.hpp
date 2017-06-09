@@ -8,6 +8,10 @@
 
 namespace tree {
 
+	const cgra::vec3 up = cgra::vec3(0, 1, 0);
+	const cgra::vec3 left = cgra::vec3(1, 0, 0);
+	const cgra::vec3 towards = cgra::vec3(0, 0, 1);
+
 	struct TreeState {
 		float length;
 		int colourIndex;
@@ -30,9 +34,6 @@ namespace tree {
 		std::stack<TreeState> stateStack;
 
 		std::map<char, RenderFunction> functionMap;
-		cgra::vec3 heading;
-		cgra::vec3 up;
-		cgra::vec3 left;
 
 		GLuint displayList = 0;
 
@@ -45,8 +46,8 @@ namespace tree {
 		void pitchDown();
 		void rollLeft();
 		void rollRight();
-		void pushMatrix();
-		void popMatrix();
+		void pushState();
+		void popState();
 		void turnAround();
 		void increaseColourIndex();
 		void decreaseColourIndex();

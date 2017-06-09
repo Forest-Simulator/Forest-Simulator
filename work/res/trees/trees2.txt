@@ -29,3 +29,41 @@ rulestart
 	chance		0.6
 ruleend
 end
+
+start
+axiom		A
+startLength	1.0 1.0
+branchAngle	22.5
+generations	7
+rulestart
+	match		A
+	transform	[&FL!A]/////’[&FL!A]///////’[&FL!A]
+ruleend
+rulestart
+	match		F
+	transform	S ///// F
+ruleend
+rulestart
+	match		S
+	transform	F L
+ruleend
+rulestart
+	match		L
+	transform	[’’’∧∧{-g+g+g-|-g+g+g}]
+ruleend
+end
+
+start
+axiom		X
+startLength	1.0 1.0
+branchAngle	25.0
+generations	5
+rulestart
+	match		X
+	transform	F[-X][X]F[-X]+FX
+ruleend
+rulestart
+	match		F
+	transform	FF
+ruleend
+end

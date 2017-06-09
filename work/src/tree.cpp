@@ -81,63 +81,6 @@ void drawAxis() {
 	tMaterial();
 }
 
-Tree::Tree() {
-	
-}
-
-Tree::Tree(vector<string> s, float a, float l) {
-	strings = s;
-	angle = a;
-	currentState.length = l;
-
-	functionMap = {
-		{'F', &Tree::drawBranch},
-		// {'f', &Tree::moveForward},
-		{'S', &Tree::drawLeaf},
-		{'[', &Tree::pushState},
-		{']', &Tree::popState},
-		{'+', &Tree::turnLeft},
-		{'-', &Tree::turnRight},
-		{'^', &Tree::pitchUp},
-		{'&', &Tree::pitchDown},
-		{'\\', &Tree::rollLeft},
-		{'/', &Tree::rollRight},
-		{'|', &Tree::turnAround},
-		{',', &Tree::increaseColourIndex},
-		{';', &Tree::decreaseColourIndex},
-		{'#', &Tree::increaseLineWidth},
-		{'!', &Tree::decreaseLineWidth}
-	};
-
-	createDisplayList();
-}
-
-void Tree::createDisplayList() {
-	displayList = glGenLists(1);
-	glNewList(displayList, GL_COMPILE);
-
-	string s = strings.back();
-
-	glRotatef(-90, 1.0, 0.0, 0.0);
-	for(int i = 0; i < int(s.size()); i++) {
-		char c = s.at(i);
-		// Get the corresponding function for character
-		// c and call it on this object
-		if(functionMap.find(c) != functionMap.end()) {
-			RenderFunction func = functionMap.at(c);
-			(this->*func)();
-		}
-	}
-	
-	glEndList();
-}
-
-void Tree::render() {
-	glPushMatrix();
-		glCallList(displayList);
-	glPopMatrix();
-}
-
 vec3 translate(vec3 start, vec3 translation) {
 	vec4 newStart = vec4(start.x, start.y, start.z, 1);
 	mat4 translationMatrix = mat4(
@@ -189,118 +132,197 @@ vec3 rotate(vec3 start, vec3 rotationAxis, float angle) {
 	return ns;
 }
 
-void Tree::drawBranch() {
+Tree::Tree() {
+	
+}
+
+Tree::Tree(vec3 startingPos, vector<string> s, float a, float l) {
+	strings = s;
+	state.position = startingPos;
+	state.angle = a;
+	state.length = l;
+
+	functionMap = {
+		{'F', &Tree::drawBranch},
+		// {'f', &Tree::moveForward},
+		{'S', &Tree::drawLeaf},
+		{'[', &Tree::pushState},
+		{']', &Tree::popState},
+		{'+', &Tree::turnLeft},
+		{'-', &Tree::turnRight},
+		{'^', &Tree::pitchUp},
+		{'&', &Tree::pitchDown},
+		{'\\', &Tree::rollLeft},
+		{'/', &Tree::rollRight},
+		{'|', &Tree::turnAround},
+		{',', &Tree::increaseColourIndex},
+		{';', &Tree::decreaseColourIndex},
+		{'#', &Tree::increaseLineWidth},
+		{'!', &Tree::decreaseLineWidth}
+	};
+
+	createDisplayList();
+}
+
+void Tree::createFromString() {
+	string s = strings.back();
+
+	// state.heading = rotate(vec3(1, 0, 0), vec3(1, 0, 0), -90.0);
+	cout << state.heading << endl;
+
+	for(int i = 0; i < int(s.size()); i++) {
+		char c = s.at(i);
+		// Get the corresponding function for character
+		// c and call it on this object
+		if(functionMap.find(c) != functionMap.end()) {
+			RenderFunction func = functionMap.at(c);
+			(this->*func)();
+		}
+	}
+}
+
+void Tree::createDisplayList() {
+	createFromString();
+
+	displayList = glGenLists(1);
+	glNewList(displayList, GL_COMPILE);
+
+	glRotatef(-90, 1.0, 0.0, 0.0);
+	
+	drawAxis();
+
 	tMaterial();
+	for(int i = 0; i < int(branchVertices.size()); i += 2)  {
+		vec3 posStart = branchVertices[i];
+		vec3 posEnd = branchVertices[i+1];
+		glBegin(GL_LINES);
+			glVertex3f(posStart.x, posStart.y, posStart.z);
+			glVertex3f(posEnd.x, posEnd.y, posEnd.z);
+		glEnd();
+	}
 
-	vec3 posStart = currentState.position;
-	vec3 move = currentState.heading * currentState.length;
+	greenMaterial();
+	for(int i = 0; i < int(leafVertices.size()); i += 4) {
+		vec3 topLeft = leafVertices[i];
+		vec3 topRight = leafVertices[i+1];
+		vec3 botLeft = leafVertices[i+2];
+		vec3 botRight = leafVertices[i+3];
+
+		glBegin(GL_POLYGON);
+			glVertex3f(topLeft.x, topLeft.y, topLeft.z);
+			glVertex3f(topRight.x, topRight.y, topRight.z);
+			glVertex3f(botLeft.x, botLeft.y, botLeft.z);
+			glVertex3f(botRight.x, botRight.y, botRight.z);
+		glEnd();
+	}
+	
+	glEndList();
+}
+
+void Tree::render() {
+	glPushMatrix();
+		glCallList(displayList);
+	glPopMatrix();
+}
+
+std::vector<cgra::vec3> Tree::getBranchVertices() {
+	return branchVertices;
+}
+
+void Tree::drawBranch() {
+	vec3 posStart = state.position;
+	vec3 move = state.heading * state.length;
 	vec3 posEnd = translate(posStart, move);
-	currentState.position = posEnd;
+	state.position = posEnd;
 
-
-	glBegin(GL_LINES);
-
-	glVertex3f(posStart.x, posStart.y, posStart.z);
-	glVertex3f(posEnd.x, posEnd.y, posEnd.z);
-
-	glEnd();
+	branchVertices.push_back(posStart);
+	branchVertices.push_back(posEnd);
 }
 
 void Tree::drawLeaf() {
 	float size = 0.2;
-	vec3 pos = currentState.position;
-	// vec3 rot = rotate(pos, currentState.heading, angle);
+	vec3 pos = state.position;
 
-	// glPushMatrix();
-	greenMaterial();
-	glBegin(GL_POLYGON);
-		glVertex3f(pos.x - size, pos.y + size, pos.z);
-		glVertex3f(pos.x + size, pos.y + size, pos.z);
-		glVertex3f(pos.x + size, pos.y - size, pos.z);
-		glVertex3f(pos.x - size, pos.y - size, pos.z);
-
-		// glVertex3f(rot.x - size, rot.y + size, rot.z);
-		// glVertex3f(rot.x + size, rot.y + size, rot.z);
-		// glVertex3f(rot.x + size, rot.y - size, rot.z);
-		// glVertex3f(rot.x - size, rot.y - size, rot.z);
-	glEnd();
-	// glPopMatrix();
+	leafVertices.push_back(vec3(pos.x - size, pos.y + size, pos.z));
+	leafVertices.push_back(vec3(pos.x + size, pos.y + size, pos.z));
+	leafVertices.push_back(vec3(pos.x + size, pos.y - size, pos.z));
+	leafVertices.push_back(vec3(pos.x - size, pos.y - size, pos.z));
 }
 
 void Tree::moveForward() {
-	vec3 posStart = currentState.position;
-	vec3 move = currentState.heading * currentState.length;
+	vec3 posStart = state.position;
+	vec3 move = state.heading * state.length;
 	vec3 posEnd = translate(posStart, move);
-	currentState.position = posEnd;
+	state.position = posEnd;
 }
 
 void Tree::turnLeft() {
-	vec3 rotEnd = rotate(currentState.heading, up, angle);
-	currentState.heading = rotEnd;
+	vec3 rotEnd = rotate(state.heading, up, state.angle);
+	state.heading = rotEnd;
 }
 
 void Tree::turnRight() {
-	vec3 rotEnd = rotate(currentState.heading, up, -angle);
-	currentState.heading = rotEnd;
+	vec3 rotEnd = rotate(state.heading, up, -state.angle);
+	state.heading = rotEnd;
 }
 
 void Tree::pitchUp() {
-	vec3 rotEnd = rotate(currentState.heading, left, angle);
-	currentState.heading = rotEnd;
+	vec3 rotEnd = rotate(state.heading, left, state.angle);
+	state.heading = rotEnd;
 }
 
 void Tree::pitchDown() {
-	vec3 rotEnd = rotate(currentState.heading, left, -angle);
-	currentState.heading = rotEnd;
+	vec3 rotEnd = rotate(state.heading, left, -state.angle);
+	state.heading = rotEnd;
 }
 
 void Tree::rollLeft() {
 	// This is not correct. Want to rotate around heading rather
 	// than z axis, but this is difficult.
-	vec3 rotEnd = rotate(currentState.heading, towards, angle);
-	currentState.heading = rotEnd;
+	vec3 rotEnd = rotate(state.heading, towards, state.angle);
+	state.heading = rotEnd;
 }
 
 void Tree::rollRight() {
 	// This is not correct. Want to rotate around heading rather
 	// than z axis, but this is difficult.
-	vec3 rotEnd = rotate(currentState.heading, towards, -angle);
-	currentState.heading = rotEnd;
+	vec3 rotEnd = rotate(state.heading, towards, -state.angle);
+	state.heading = rotEnd;
 }
 
 void Tree::turnAround() {
 	// Flips 180 degrees
-	vec3 rotStart = currentState.heading;
+	vec3 rotStart = state.heading;
 	vec3 rotEnd = rotate(rotStart, up, 180.0);
-	currentState.heading = rotEnd;
+	state.heading = rotEnd;
 }
 
 void Tree::pushState() {
-	stateStack.push(currentState);
+	stateStack.push(state);
 }
 
 void Tree::popState() {
-	currentState = stateStack.top();
+	state = stateStack.top();
 	stateStack.pop();
 }
 
 void Tree::increaseColourIndex() {
 	int colourMapSize = 5;
-	int newColourIndex = currentState.colourIndex + 1;
-	if(newColourIndex < colourMapSize) currentState.colourIndex = newColourIndex;
+	int newColourIndex = state.colourIndex + 1;
+	if(newColourIndex < colourMapSize) state.colourIndex = newColourIndex;
 }
 
 void Tree::decreaseColourIndex() {
-	int newColourIndex = currentState.colourIndex - 1;
-	if(newColourIndex >= 0) currentState.colourIndex = newColourIndex;
+	int newColourIndex = state.colourIndex - 1;
+	if(newColourIndex >= 0) state.colourIndex = newColourIndex;
 }
 
 void Tree::increaseLineWidth() {
-	float newLength = currentState.length / 0.8;
-	if(newLength < 4.0) currentState.length = newLength;
+	float newLength = state.length / 0.8;
+	if(newLength < 4.0) state.length = newLength;
 }
 
 void Tree::decreaseLineWidth() {
-	float newLength = currentState.length * 0.8;
-	if(newLength > 0.2) currentState.length = newLength;
+	float newLength = state.length * 0.8;
+	if(newLength > 0.2) state.length = newLength;
 }

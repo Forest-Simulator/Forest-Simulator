@@ -13,6 +13,7 @@ namespace tree {
 	const cgra::vec3 towards = cgra::vec3(0, 0, 1);
 
 	struct TreeState {
+		float angle;
 		float length;
 		int colourIndex;
 		cgra::vec3 heading = cgra::vec3(0, 0, 1);
@@ -27,13 +28,14 @@ namespace tree {
 
 	class Tree {
 	private:
-		float angle;
+		
 		std::vector<std::string> strings;
 
-		TreeState currentState;
+		TreeState state;
 		std::stack<TreeState> stateStack;
-
 		std::map<char, RenderFunction> functionMap;
+		std::vector<cgra::vec3> branchVertices;
+		std::vector<cgra::vec3> leafVertices;
 
 		GLuint displayList = 0;
 
@@ -58,10 +60,12 @@ namespace tree {
 		void headingEnd();
 		cgra::vec3 getCrossProductOfZAxisAndHeading();
 		float getAngleBetweenZAxisAndHeading();
+		void createFromString();
 		void createDisplayList();
 	public:
 		Tree();
-		Tree(std::vector<std::string>, float, float);
+		Tree(cgra::vec3, std::vector<std::string>, float, float);
 		void render();
+		std::vector<cgra::vec3> getBranchVertices();
 	};
 }

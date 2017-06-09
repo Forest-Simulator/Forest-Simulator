@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+#include "cgra_math.hpp"
 #include "lsystem.hpp"
 #include "tree.hpp"
 
@@ -18,7 +19,7 @@ namespace tree {
 		lsys::LSystem lsystem;
 		std::vector<lsys::Rule> rules;
 		TreeGenerator();
-		Tree* generate();
+		Tree* generate(cgra::vec3);
 	};
 
 	class TreeFactory {
@@ -27,6 +28,6 @@ namespace tree {
 		void readFile(std::string);
 	public:
 		TreeFactory(std::string);
-		Tree* generate();
+		Tree* generate(cgra::vec3);
 	};
 }

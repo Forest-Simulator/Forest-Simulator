@@ -17,7 +17,7 @@ using namespace tree;
 
 TreeGenerator::TreeGenerator() {}
 
-Tree* TreeGenerator::generate() {
+Tree* TreeGenerator::generate(vec3 startingPos) {
 	vector<string> s;
 	for(int i = 0; i < generations; i++) {
 		s = lsystem.generate();
@@ -25,7 +25,7 @@ Tree* TreeGenerator::generate() {
 	
 	float sl = math::random(startLength[0], startLength[1]);
 
-	return new Tree(s, branchAngle, sl);
+	return new Tree(startingPos, s, branchAngle, sl);
 }
 
 TreeFactory::TreeFactory(string filename) {
@@ -114,8 +114,8 @@ void TreeFactory::readFile(string filename) {
 	}
 }
 
-Tree* TreeFactory::generate() {
+Tree* TreeFactory::generate(vec3 startingPos) {
 	int rand = math::random(0, int(generators.size()));
 	TreeGenerator tg = generators[rand];
-	return tg.generate();
+	return tg.generate(startingPos);
 }

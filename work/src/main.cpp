@@ -152,13 +152,13 @@ void initHeightmap() {
 }
 
 void initTrees() {
-	
 	treeFactory = new tree::TreeFactory("./work/res/trees/trees.txt");
-	t = treeFactory->generate();
+	int halfSize = heightmap->getSize() / 2;
+	t = treeFactory->generate(vec3(0, 0, 0));
 
-	for(int x = 0; x < heightmap->getSize() / 4; x++) {
-		trees.push_back(treeFactory->generate());
-	}
+	// for(int x = -halfSize; x < halfSize; x += 4) {
+	// 	trees.push_back(treeFactory->generate(vec3(x, -x, 0)));
+	// }
 
 	// Trees have been generated, so release the treeFactory object
 	// from memory and set its pointer to null
@@ -216,18 +216,11 @@ void renderObjects(int width, int height) {
 		glPopMatrix();
 
 		glPushMatrix();
-			int size = heightmap->getSize();
-			int halfSize = size / 2;
-			int count = 0;
-			glTranslatef(-halfSize, 0.0, halfSize);
-			for(tree::Tree* t : trees) {
-				glTranslatef(4.0, 0.0, 0.0);
-				t->render();
-				glTranslatef(0.0, 0.0, -4.0);
-				count++;
-			}
+			// for(tree::Tree* t : trees) {
+			// 	t->render();
+			// }
 
-			// t->render();
+			t->render();
 		glPopMatrix();
 
 		boidMaterial();

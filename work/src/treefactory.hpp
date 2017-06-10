@@ -15,6 +15,7 @@ namespace tree {
 		float branchAngle;
 		float probability;
 		float generations;
+		std::vector<cgra::vec3> colours;
 
 		lsys::LSystem lsystem;
 		std::vector<lsys::Rule> rules;

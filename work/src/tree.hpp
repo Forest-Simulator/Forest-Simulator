@@ -10,14 +10,53 @@ namespace tree {
 
 	const cgra::vec3 up = cgra::vec3(0, 1, 0);
 	const cgra::vec3 left = cgra::vec3(1, 0, 0);
-	const cgra::vec3 towards = cgra::vec3(0, 0, 1);
+	const cgra::vec3 heading = cgra::vec3(0, 0, 1);
 
 	struct TreeState {
 		float angle;
 		float length;
-		int colourIndex;
-		cgra::vec3 heading = cgra::vec3(0, 0, 1);
+		int colourIndex = 0;
+		cgra::mat4 orientation = cgra::mat4(
+			cgra::vec4(1, 0, 0, 0),
+			cgra::vec4(0, 1, 0, 0),
+			cgra::vec4(0, 0, 1, 0),
+			cgra::vec4(0, 0, 0, 1)
+		);
 		cgra::vec3 position;
+		std::vector<cgra::vec3> colours;
+
+		cgra::vec3 up() {
+			cgra::vec4 u = cgra::vec4(0, 1, 0, 1);
+			cgra::vec4 i = cgra::vec4(
+				dot(orientation[0], u),
+				dot(orientation[1], u),
+				dot(orientation[2], u),
+				dot(orientation[3], u)
+			);
+			return cgra::vec3(i.x, i.y, i.z);
+		}
+
+		cgra::vec3 left() {
+			cgra::vec4 l = cgra::vec4(1, 0, 0, 1);
+			cgra::vec4 i = cgra::vec4(
+				dot(orientation[0], l),
+				dot(orientation[1], l),
+				dot(orientation[2], l),
+				dot(orientation[3], l)
+			);
+			return cgra::vec3(i.x, i.y, i.z);
+		}
+
+		cgra::vec3 heading() {
+			cgra::vec4 h = cgra::vec4(0, 0, 1, 1);
+			cgra::vec4 i = cgra::vec4(
+				dot(orientation[0], h),
+				dot(orientation[1], h),
+				dot(orientation[2], h),
+				dot(orientation[3], h)
+			);
+			return cgra::vec3(i.x, i.y, i.z);
+		}
 	};
 
 	// Forward declare Tree so that pointers to 
@@ -41,7 +80,7 @@ namespace tree {
 		void drawBranch();
 		void drawLeaf();
 		void moveForward();
-		void moveForwardAndPlaceVertex();
+		void placeVertex();
 		void turnLeft();
 		void turnRight();
 		void pitchUp();
@@ -66,7 +105,7 @@ namespace tree {
 		void createDisplayList();
 	public:
 		Tree();
-		Tree(cgra::vec3, std::vector<std::string>, float, float);
+		Tree(cgra::vec3, std::vector<std::string>, float, float, std::vector<cgra::vec3>);
 		void render();
 		std::vector<cgra::vec3> getBranchVertices();
 	};

@@ -34,7 +34,8 @@ start
 axiom		A
 startLength	1.0 1.0
 branchAngle	22.5
-generations	7
+generations	3
+colours		0.12 0.58 0.18	0.3 0.66 0.23	0.44 0.55 0.07	0.51 0.83 0.21
 rulestart
 	match		A
 	transform	[&FL!A]/////’[&FL!A]///////’[&FL!A]
@@ -49,7 +50,7 @@ rulestart
 ruleend
 rulestart
 	match		L
-	transform	[’’’∧∧{-g+g+g-|-g+g+g}]
+	transform	[’’’∧∧{-f.+f.+f.-|-f.+f.+f.}]
 ruleend
 end
 
@@ -76,6 +77,97 @@ generations	4
 rulestart
 	match		X
 	transform	F[\\\\-X][//X]F[^-X]+F&X
+ruleend
+rulestart
+	match		F
+	transform	FF
+ruleend
+end
+
+start
+axiom		![A][B]
+startLength	1.0 1.0
+branchAngle	22.5
+generations	10
+colours		0.12 0.58 0.18	0.3 0.66 0.23	0.44 0.55 0.07	0.51 0.83 0.21
+rulestart
+	match		A
+	transform	[+A{.].C.}
+ruleend
+rulestart
+	match		B
+	transform	[-B{.].C.}
+ruleend
+rulestart
+	match		C
+	transform	fC
+ruleend
+end
+
+start
+axiom		A
+startLength	1.0 1.0
+branchAngle	22.5
+generations	7
+colours		0.12 0.58 0.18	0.3 0.66 0.23	0.44 0.55 0.07	0.51 0.83 0.21
+rulestart
+	match		A
+	transform	[&FL!A]+’[&FL!A]-’[&FL!A]
+ruleend
+rulestart
+	match		F
+	transform	S  F
+ruleend
+rulestart
+	match		S
+	transform	F L
+ruleend
+rulestart
+	match		L
+	transform	[’’’∧∧{-f.+f.+f.-|-f.+f.+f.}]
+ruleend
+end
+
+start
+axiom		A
+startLength	1.0 1.0
+branchAngle	22.5
+generations	2
+colours		0.12 0.58 0.18	0.3 0.66 0.23	0.44 0.55 0.07	0.51 0.83 0.21
+rulestart
+	match		A
+	transform	F[+FS][-FS][\FS][/FS]
+ruleend
+rulestart
+	match		S
+	transform	[’’∧∧{-f.+f.+f.-|-f.+f.+f.}]
+ruleend
+end
+
+start
+axiom		X
+startLength	1.0 1.0
+branchAngle	25.7
+generations	7
+colours		0.12 0.58 0.18	0.3 0.66 0.23	0.44 0.55 0.07	0.51 0.83 0.21
+rulestart
+	match		X
+	transform	F[+X][-X]FX
+ruleend
+rulestart
+	match		F
+	transform	FF
+ruleend
+end
+
+start
+axiom		X
+startLength	1.0 1.0
+branchAngle	25.0
+generations	3
+rulestart
+	match		X
+	transform	F[\X][X]F[&\X]^/FX
 ruleend
 rulestart
 	match		F

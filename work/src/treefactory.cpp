@@ -25,7 +25,7 @@ Tree* TreeGenerator::generate(vec3 startingPos) {
 	
 	float sl = math::random(startLength[0], startLength[1]);
 
-	return new Tree(startingPos, s, branchAngle, sl);
+	return new Tree(startingPos, s, branchAngle, sl, colours);
 }
 
 TreeFactory::TreeFactory(string filename) {
@@ -82,6 +82,17 @@ void TreeFactory::readFile(string filename) {
 			t.probability = stof(values[0]);
 		} else if(key == "generations") {
 			t.generations = stof(values[0]);
+		} else if(key == "colours") {
+			for(int rIndex = 0; rIndex < int(values.size()); rIndex += 3) {
+				int gIndex = rIndex + 1;
+				int bIndex = rIndex + 2;
+
+				float r = stof(values[rIndex]);
+				float g = stof(values[gIndex]);
+				float b = stof(values[bIndex]);
+
+				t.colours.push_back(vec3(r, g, b));
+			}
 		} else if(key == "rulestart") {
 			// rules.clear();
 		} else if(key == "match") {
@@ -107,6 +118,7 @@ void TreeFactory::readFile(string filename) {
 				r = Rule(match, transform);
 			}
 			t.rules.push_back(r);
+			rulechance = 0.0;
 		} else if(key == "end") {
 			t.lsystem = LSystem(t.axiom, t.rules);
 			generators.push_back(t);

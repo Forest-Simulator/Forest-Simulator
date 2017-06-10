@@ -59,6 +59,10 @@ namespace tree {
 		}
 	};
 
+	struct TreePolygon {
+		std::vector<cgra::vec3> vertices;
+	};
+
 	// Forward declare Tree so that pointers to 
 	// member-methods can be constructed
 	class Tree;
@@ -72,13 +76,16 @@ namespace tree {
 
 		TreeState state;
 		std::stack<TreeState> stateStack;
+		std::stack<TreePolygon*> polygonStack;
 		std::map<char, RenderFunction> functionMap;
 		std::vector<cgra::vec3> branchVertices;
 
 		GLuint displayList = 0;
 
+		void drawBranchPlaceVertex();
 		void drawBranch();
 		void drawLeaf();
+		void moveForwardPlaceVertex();
 		void moveForward();
 		void placeVertex();
 		void turnLeft();

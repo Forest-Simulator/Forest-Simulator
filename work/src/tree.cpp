@@ -130,9 +130,7 @@ mat4 makeRotationMatrix(vec3 rotationAxis, float angle) {
 
 mat4 rotate(mat4 start, vec3 rotationAxis, float angle) {
 	mat4 rotationMatrix = makeRotationMatrix(rotationAxis, angle);
-
 	mat4 m = rotationMatrix * start;
-
 	return m;
 }
 
@@ -148,10 +146,10 @@ Tree::Tree(vec3 startingPos, vector<string> s, float a, float l, vector<vec3> co
 	state.colours = colours;
 
 	functionMap = {
-		{'F', &Tree::drawBranch},
-		// {'A', &Tree::drawBranch},
+		{'F', &Tree::drawBranchPlaceVertex},
 		{'G', &Tree::drawBranch},
-		{'f', &Tree::moveForward},
+		{'f', &Tree::moveForwardPlaceVertex},
+		{'g', &Tree::moveForward},
 		{'[', &Tree::pushState},
 		{']', &Tree::popState},
 		{'{', &Tree::beginPoly},
@@ -176,6 +174,8 @@ Tree::Tree(vec3 startingPos, vector<string> s, float a, float l, vector<vec3> co
 void Tree::createDisplayList() {
 	displayList = glGenLists(1);
 	glNewList(displayList, GL_COMPILE);
+
+	drawAxis();
 
 	glRotatef(-90, 1, 0, 0);
 
@@ -208,6 +208,11 @@ std::vector<cgra::vec3> Tree::getBranchVertices() {
 	return branchVertices;
 }
 
+void Tree::drawBranchPlaceVertex() {
+	drawBranch();
+	placeVertex();
+}
+
 void Tree::drawBranch() {
 	vec3 posStart = state.position;
 	vec3 move = state.heading() * state.length;
@@ -218,11 +223,16 @@ void Tree::drawBranch() {
 	branchVertices.push_back(posStart);
 	branchVertices.push_back(posEnd);
 
-	tMaterial();
+	// tMaterial();
 	glBegin(GL_LINES);
 		glVertex3f(posStart.x, posStart.y, posStart.z);
 		glVertex3f(posEnd.x, posEnd.y, posEnd.z);
 	glEnd();
+}
+
+void Tree::moveForwardPlaceVertex() {
+	moveForward();
+	placeVertex();
 }
 
 void Tree::moveForward() {
@@ -233,7 +243,11 @@ void Tree::moveForward() {
 }
 
 void Tree::placeVertex() {
-	glVertex3f(state.position.x, state.position.y, state.position.z);
+	if(!polygonStack.empty()) {
+		TreePolygon* tp = polygonStack.top();
+		tp->vertices.push_back(state.position);
+	}
+	// glVertex3f(state.position.x, state.position.y, state.position.z);
 }
 
 void Tree::turnLeft() {
@@ -282,11 +296,21 @@ void Tree::popState() {
 }
 
 void Tree::beginPoly() {
-	glBegin(GL_POLYGON);
+	TreePolygon* tp = new TreePolygon();
+	polygonStack.push(tp);
 }
 
 void Tree::endPoly() {
+	TreePolygon* tp = polygonStack.top();
+	polygonStack.pop();
+
+	glBegin(GL_POLYGON);
+	for(vec3 v : tp->vertices) {
+		glVertex3f(v.x, v.y, v.z);
+	}
 	glEnd();
+
+	delete tp;
 }
 
 void Tree::increaseColourIndex() {

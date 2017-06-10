@@ -1,61 +1,15 @@
 start
-name		Pretend
-axiom		F
-startLength	1.0 2.0
+axiom		L
+startLength	1.0 1.0
 branchAngle	25.0
-probability	0.2
-generations	6
+generations	2
 colours		0.12 0.58 0.18	0.3 0.66 0.23	0.44 0.55 0.07	0.51 0.83 0.21
 rulestart
-	match		F
-	transform	F[!^-F][!\\\+F]
-	rulechance	0.8
-ruleend
-rulestart
-	match		F
-	transform	F[+F]
-ruleend
-end
-
-start
-name		Pretend
-axiom		F
-startLength	1.0 2.0
-branchAngle	25.0
-probability	0.2
-generations	4
-colours		0.12 0.58 0.18	0.3 0.66 0.23	0.44 0.55 0.07	0.51 0.83 0.21
-rulestart
-	match		F
-	transform	F[!^-F][!\\\+F]
-	rulechance	0.8
-ruleend
-rulestart
-	match		F
-	transform	F[+F]
-ruleend
-end
-
-start
-axiom		A
-startLength	0.5 1.0
-branchAngle	22.5
-generations	5
-colours		0.12 0.58 0.18	0.3 0.66 0.23	0.44 0.55 0.07	0.51 0.83 0.21
-rulestart
-	match		A
-	transform	[&FL!A]/////’[&FL!A]///////’[&FL!A]
-ruleend
-rulestart
-	match		F
-	transform	S ///// F
+	match		L
+	transform	&&F[&--S][++/[&++S]&F[--S][++S]F[--S][++S]F[--S][++S]]&F[--S][++S]F[--S][++S]F[--S][++S]
 ruleend
 rulestart
 	match		S
-	transform	F L
-ruleend
-rulestart
-	match		L
-	transform	[!!!’’’∧∧{-f.+f.+f.-|-f.+f.+f.}]
+	transform	[!!!!!!!!!!’’[{+.G.{.&G.{.&G.][-G[&G[&G.].}.].}.}]]
 ruleend
 end

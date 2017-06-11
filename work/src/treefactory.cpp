@@ -44,8 +44,8 @@ void TreeFactory::readFile(string filename) {
 
 	char match;
 	string transform;
-	char rightcontext = 'Z';
-	char leftcontext = 'Z';
+	string rightcontext = "Z";
+	string leftcontext = "Z";
 	float rulechance = 0.0;
 
 	while(objFile.good()) {
@@ -102,18 +102,29 @@ void TreeFactory::readFile(string filename) {
 		} else if(key == "rulechance") {
 			rulechance = stof(values[0]);
 		} else if(key == "rightcontext") {
-			rightcontext = values[0][0];
+			rightcontext = values[0];
 		} else if(key == "leftcontext") {
-			leftcontext = values[0][0];
+			leftcontext = values[0];
 		} else if(key == "ruleend") {
 			Rule r;
-			if(rulechance != 0.0) {
+			if(rulechance != 0.0 && (rightcontext != "Z" || leftcontext != "Z")) {
+				RuleContext rc;
+				rc.right = rightcontext;
+				rc.left = leftcontext;
+				r = Rule(match, transform, rc, rulechance);
+
+				rightcontext = "Z";
+				leftcontext = "Z";
+			} else if(rulechance != 0.0) {
 				r = Rule(match, transform, rulechance);
-			} else if(rightcontext != 'Z' || leftcontext != 'Z') {
+			} else if(rightcontext != "Z" || leftcontext != "Z") {
 				RuleContext rc;
 				rc.right = rightcontext;
 				rc.left = leftcontext;
 				r = Rule(match, transform, rc);
+
+				rightcontext = "Z";
+				leftcontext = "Z";
 			} else {
 				r = Rule(match, transform);
 			}

@@ -252,3 +252,19 @@ rulestart
 	transform	’[{+.G.{.&G.{.&G.][-G[&G[&G.].}.].}.}]
 ruleend
 end
+
+start
+axiom		L
+startLength	1.0 1.0
+branchAngle	25.0
+generations	2
+colours		0.12 0.58 0.18	0.3 0.66 0.23	0.44 0.55 0.07	0.51 0.83 0.21
+rulestart
+	match		L
+	transform	&&F[&--S][++/[&++S]&F[--S][++S]F[--S][++S]F[--S][++S]]&F[--S][++S]F[--S][++S]F[--S][++S]
+ruleend
+rulestart
+	match		S
+	transform	[!!!!!!!!!!’’[{+.G.{.&G.{.&G.][-G[&G[&G.].}.].}.}]]
+ruleend
+end

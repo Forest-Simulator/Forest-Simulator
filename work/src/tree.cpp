@@ -187,6 +187,8 @@ void Tree::createDisplayList() {
 void Tree::createFromString() {
 	string s = strings.back();
 
+	cout << s << endl;
+
 	for(int i = 0; i < int(s.size()); i++) {
 		char c = s.at(i);
 		// Get the corresponding function for character

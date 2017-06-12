@@ -3,7 +3,6 @@
 
 #include "cgra_math.hpp"
 #include "flock.hpp"
-//#include "boid.hpp"
 
 using namespace std;
 using namespace cgra;
@@ -17,12 +16,18 @@ Flock::Flock(int size){
 } 
 
 void Flock::update(){
-	steer(leader);
 	leader.destination = destination;
+	//cout << "before: " << leader.position.x << ", " << leader.position.y << ", " << leader.position.z << endl;
+	steer(leader);
+	//cout << "after: " << leader.position.x << ", " << leader.position.y << ", " << leader.position.z << endl;
+	leader.render();
+
 	int s = boids.size();
 	for(int i = 0; i < s; ++i){
-		steer(boids[i]);
 		boids[i].destination = boids[i].parent->position;
+		steer(boids[i]);
+
+		boids[i].render();
 	}
 }
 
@@ -30,40 +35,73 @@ void Flock::steer(Boid b){
 	vec3 v = vec3(0, 0, 0);
 	v += align(b);
 	v += separate(b);
-
+	//cout << v.x << ", " << v.y << ", " << v.z << endl;
 	b.velocity += v;
-	if(length(v) > max_speed){
-		b.velocity = b.velocity*(max_speed/length(v));
-	}
 
+	//cout << b.velocity.x << ", " << b.velocity.y << ", " << b.velocity.z << endl;
+	//cout << length << ", " << max_speed << endl;
+	float length = lengthVector(b.velocity);
+	if(length > max_speed){
+		b.velocity = b.velocity*(max_speed/length);
+	}
+	cout << "before: " << b.position.x << ", " << b.position.y << ", " << b.position.z << endl;
 	b.position += b.velocity;
+	cout << "after: " << b.position.x << ", " << b.position.y << ", " << b.position.z << endl;
+
+}
+
+float Flock::lengthVector(vec3 v){
+	vec3 u = v;
+	float n = (u.x * u.x + u.y * u.y + u.z * u.z);
+	if(n != 0){
+		float l = sqrt(u.x * u.x + u.y * u.y + u.z * u.z);
+		return l;
+	}
+	return 0;
+}
+
+vec3 Flock::normalizeVector(vec3 v){
+	vec3 u = v;
+	float l = lengthVector(u);
+	if(l != 0){
+		if(u.x != 0){ u.x /= l; }
+		if(u.y != 0){ u.y /= l; }
+		if(u.z != 0){ u.z /= l; }
+		return u;
+	}
+	return vec3(0, 0, 0);
 }
 
 vec3 Flock::align(Boid b){
-	vec3 alignment = b.destination - b.position;
-	return normalize(alignment);
+	vec3 a = b.destination - b.position;
+	return normalizeVector(a);
 }
 
 vec3 Flock::separate(Boid b){
-	int neighbours;
+	int neighbours = 0;
 	vec3 velocity = vec3(0, 0, 0);
 
 	int s = boids.size();
-	for(int i = 0; i < s; ++i){
+	for(int i = 0; i < s-1; ++i){
 		if(&boids[i] != &b){
-			float distance = length(b.position - boids[i].position);
-
+			float distance = lengthVector(b.position - boids[i].position);
 			if(distance < minimum_separation){
 				vec3 force = b.position - boids[i].position;
-				velocity += normalize(force);
+				velocity += normalizeVector(force);
 
 				++neighbours;
 			}
 		}
 	}
 
+	
+
 	if(neighbours > 0){
-		return velocity/neighbours;
+		//cout << velocity.x << ", " << velocity.y << ", " << velocity.z << endl;
+		if(velocity.x != 0){velocity.x /= neighbours;}
+		if(velocity.y != 0){velocity.y /= neighbours;}
+		if(velocity.z != 0){velocity.z /= neighbours;}
+		return velocity;
 	}
 	return velocity;
 }

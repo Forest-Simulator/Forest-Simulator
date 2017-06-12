@@ -17,27 +17,27 @@ Boid::Boid(vec3 pos){
 void Boid::addTriangles(){
 	triangle tri;
 
-	tri.vertices[0] = vec3( 0.0f, 1.0f, 0.0f );
-	tri.vertices[1] = vec3( -1.0f, -1.0f, 1.0f );
-	tri.vertices[2] = vec3( 1.0f, -1.0f, 1.0f );
+	tri.vertices[0] = vec3( 0.0f, 0.2f, 0.0f );
+	tri.vertices[1] = vec3( -0.2f, -0.2f, 0.2f );
+	tri.vertices[2] = vec3( 0.2f, -0.2f, 0.2f );
 
 	process(tri);
 
-	tri.vertices[0] = vec3( 0.0f, 1.0f, 0.0f );
-	tri.vertices[1] = vec3( -1.0f, -1.0f, 1.0f );
-	tri.vertices[2] = vec3( 0.0f, -1.0f, -1.0f );
+	tri.vertices[0] = vec3( 0.0f, 0.2f, 0.0f );
+	tri.vertices[1] = vec3( -0.2f, -0.2f, 0.2f );
+	tri.vertices[2] = vec3( 0.0f, -0.2f, -0.2f );
 
 	process(tri);
 
-	tri.vertices[0] = vec3( 0.0f, 1.0f, 0.0f );
-	tri.vertices[1] = vec3( 0.0f, -1.0f, -1.0f );
-	tri.vertices[2] = vec3( 1.0f, -1.0f, 1.0f );
+	tri.vertices[0] = vec3( 0.0f, 0.2f, 0.0f );
+	tri.vertices[1] = vec3( 0.0f, -0.2f, -0.2f );
+	tri.vertices[2] = vec3( 0.2f, -0.2f, 0.2f );
 
 	process(tri);
 
-	tri.vertices[0] = vec3( -1.0f, -1.0f, 1.0f );
-	tri.vertices[1] = vec3( 0.0f, -1.0f, -1.0f );
-	tri.vertices[2] = vec3( 1.0f, -1.0f, 1.0f );
+	tri.vertices[0] = vec3( -0.2f, -0.2f, 0.2f );
+	tri.vertices[1] = vec3( 0.0f, -0.2f, -0.2f );
+	tri.vertices[2] = vec3( 0.2f, -0.2f, 0.2f );
 
 	process(tri);
 }
@@ -56,7 +56,6 @@ void Boid::createDisplayList()
 	if (m_displayList) glDeleteLists(m_displayList, 1);
 
 	// Create a new list
-	cout << "Creating Poly Geometry" << endl;
 	m_displayList = glGenLists(1);
 	glNewList(m_displayList, GL_COMPILE);
 
@@ -77,8 +76,6 @@ void Boid::createDisplayList()
 	glEnd();
 
 	glEndList();
-	cout << "Finished creating Poly Geometry" << endl;
-
 }
 
 void Boid::render(){
@@ -86,8 +83,8 @@ void Boid::render(){
 
 	glTranslatef(position.x, position.y, position.z);
 
-	vec3 axis = cross(velocity, vec3(0, 0, 1));
-	glRotatef(degrees(acos(dot(velocity, vec3(0, 0, 1)))), axis.x, axis.y, axis.z);
+	//vec3 axis = cross(velocity, vec3(0, 0, 1));
+	//glRotatef(degrees(acos(dot(velocity, vec3(0, 0, 1)))), axis.x, axis.y, axis.z);
 	
 	glColor3f(1.0, 0.0, 0.0);
 

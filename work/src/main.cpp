@@ -23,7 +23,7 @@
 #include "lsystem.hpp"
 #include "tree.hpp"
 #include "treefactory.hpp"
-#include "boid.hpp"
+#include "flock.hpp"
 
 using namespace std;
 using namespace cgra;
@@ -57,6 +57,7 @@ vector<tree::Tree*> trees;
 
 //Flock of birds
 //
+Flock* flock;
 Boid* boid;
 
 
@@ -166,8 +167,9 @@ void initTrees() {
 	treeFactory = nullptr;
 }
 
-void initBoids(){
-	boid = new Boid(vec3(0, 2, 0));
+void initFlock(){
+	flock = new Flock(200);
+	boid = new Boid(vec3(1, 1, 1));
 }
 
 void grassMaterial() {
@@ -224,7 +226,8 @@ void renderObjects(int width, int height) {
 		glPopMatrix();
 
 		boidMaterial();
-		boid->render();
+		flock->update();
+		//boid->render();
 
 
 	glPopMatrix();
@@ -286,7 +289,7 @@ int main(int argc, char **argv) {
 	glfwGetVersion(&glfwMajor, &glfwMinor, &glfwRevision);
 
 	// Create a windowed mode window and its OpenGL context
-	g_window = glfwCreateWindow(640, 480, "Hello World", nullptr, nullptr);
+	g_window = glfwCreateWindow(640, 480, "Forest Simulator", nullptr, nullptr);
 	if (!g_window) {
 		cerr << "Error: Could not create GLFW window" << endl;
 		abort(); // Unrecoverable error
@@ -340,7 +343,7 @@ int main(int argc, char **argv) {
 
 
 	// Initialize Geometry/Material/Lights
-	initBoids();
+	initFlock();
 	initHeightmap();
 	initTrees();
 	initLight();

@@ -207,6 +207,7 @@ namespace cgra {
 
 		static vector2 checknan(const vector2 &v) {
 			T sum = v.x + v.y;
+
 			assert(sum == sum);
 			return v;
 		}
@@ -824,6 +825,10 @@ namespace cgra {
 
 		static vector3 checknan(const vector3 &v) {
 			T sum = v.x + v.y + v.z;
+
+			// std::cout << v.x << ", " << v.y << ", " << v.z << std::endl;
+			// std::cout << "sum: "  << sum << "(sum == sum) " << (sum == sum) << std::endl;
+			
 			assert(sum == sum);
 			return v;
 		}

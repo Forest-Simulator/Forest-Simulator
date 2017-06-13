@@ -11,7 +11,7 @@ private:
 	vec3 destination = vec3(5, 5, 5);
 	vector<Boid> boids;
 
-	float minimum_separation = 2;
+	float minimum_separation = 1;
 	float max_speed = 0.2f;
 
 	void steer(Boid *b);

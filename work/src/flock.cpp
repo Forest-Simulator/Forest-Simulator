@@ -103,17 +103,13 @@ void Flock::setDestination(vec3 dest){
 }
 
 void Flock::arrange(Boid *node, Boid *b){
-	if(node->emptyLeft){
+	if(node->left != nullptr){
 		node->left = b;
-		node->emptyLeft = false;
-		//cout << "bilbo" <<endl;
 		b->parent = node;
 		return;
 	}
-	else if(node->emptyRight){
+	else if(node->right != nullptr){
 		node->right = b;
-		node->emptyRight = false;
-		//cout << "frodo" <<endl;
 		b->parent = node;
 		return;
 	}

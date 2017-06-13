@@ -210,7 +210,6 @@ void renderObjects(int width, int height) {
 	glPushMatrix();
 		
 		glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE); 
-		glColor3f(1.0, 0.0, 0.0);
 
 		glPushMatrix();
 			grassMaterial();
@@ -226,7 +225,7 @@ void renderObjects(int width, int height) {
 		glPopMatrix();
 
 		boidMaterial();
-		// flock->update();
+		flock->update();
 		//boid->render();
 
 

@@ -14,13 +14,13 @@ private:
 	float minimum_separation = 2;
 	float max_speed = 0.2f;
 
-	void steer(Boid b);
+	void steer(Boid *b);
 	float lengthVector(cgra::vec3 v);
 	cgra::vec3 normalizeVector(cgra::vec3 v);
-	cgra::vec3 separate(Boid b);
-	cgra::vec3 align(Boid b);
+	cgra::vec3 separate(Boid *b);
+	cgra::vec3 align(Boid *b);
 	
-	void arrange(Boid node, Boid b);
+	void arrange(Boid *node, Boid *b);
 public:
 	Flock(int size);
 	void setDestination(vec3 dest);

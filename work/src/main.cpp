@@ -153,7 +153,7 @@ void initHeightmap() {
 }
 
 void initTrees() {
-	treeFactory = new tree::TreeFactory("./work/res/trees/trees.txt");
+	treeFactory = new tree::TreeFactory("../work/res/trees/trees.txt");
 	int halfSize = heightmap->getSize() / 2;
 	t = treeFactory->generate(vec3(0, 0, 0));
 
@@ -226,7 +226,7 @@ void renderObjects(int width, int height) {
 		glPopMatrix();
 
 		boidMaterial();
-		flock->update();
+		// flock->update();
 		//boid->render();
 
 

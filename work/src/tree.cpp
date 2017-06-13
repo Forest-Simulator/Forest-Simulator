@@ -225,7 +225,7 @@ void Tree::drawBranch() {
 	branchVertices.push_back(posStart);
 	branchVertices.push_back(posEnd);
 
-	// tMaterial();
+	tMaterial();
 	glBegin(GL_LINES);
 		glVertex3f(posStart.x, posStart.y, posStart.z);
 		glVertex3f(posEnd.x, posEnd.y, posEnd.z);

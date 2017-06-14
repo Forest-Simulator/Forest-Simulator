@@ -17,27 +17,39 @@ Boid::Boid(vec3 pos){
 void Boid::addTriangles(){
 	triangle tri;
 
-	tri.vertices[0] = vec3( 0.0f, 0.2f, 0.0f );
-	tri.vertices[1] = vec3( -0.2f, -0.2f, 0.2f );
-	tri.vertices[2] = vec3( 0.2f, -0.2f, 0.2f );
+	tri.vertices[0] = vec3( 0.4f, 0.0f, 0.0f );
+	tri.vertices[1] = vec3( 0.0f, -0.2f, 0.0f );
+	tri.vertices[2] = vec3( 0.0f, 0.2f, 0.0f );
 
 	process(tri);
 
-	tri.vertices[0] = vec3( 0.0f, 0.2f, 0.0f );
-	tri.vertices[1] = vec3( -0.2f, -0.2f, 0.2f );
-	tri.vertices[2] = vec3( 0.0f, -0.2f, -0.2f );
+	tri.vertices[0] = vec3( -0.4f, 0.0f, 0.0f );
+	tri.vertices[1] = vec3( 0.0f, -0.2f, 0.0f );
+	tri.vertices[2] = vec3( 0.0f, 0.2f, 0.0f );
 
 	process(tri);
 
-	tri.vertices[0] = vec3( 0.0f, 0.2f, 0.0f );
-	tri.vertices[1] = vec3( 0.0f, -0.2f, -0.2f );
-	tri.vertices[2] = vec3( 0.2f, -0.2f, 0.2f );
+	tri.vertices[0] = vec3( 0.0f, 0.0f, 1.2f );
+	tri.vertices[1] = vec3( 0.4f, 0.0f, 0.0f );
+	tri.vertices[2] = vec3( 0.0f, 0.2f, 0.0f );
 
 	process(tri);
 
-	tri.vertices[0] = vec3( -0.2f, -0.2f, 0.2f );
-	tri.vertices[1] = vec3( 0.0f, -0.2f, -0.2f );
-	tri.vertices[2] = vec3( 0.2f, -0.2f, 0.2f );
+	tri.vertices[0] = vec3( 0.0f, 0.0f, 1.2f );
+	tri.vertices[1] = vec3( -0.4f, 0.0f, 0.0f );
+	tri.vertices[2] = vec3( 0.0f, 0.2f, 0.0f );
+
+	process(tri);
+
+	tri.vertices[0] = vec3( 0.0f, 0.0f, 1.2f );
+	tri.vertices[1] = vec3( 0.4f, 0.0f, 0.0f );
+	tri.vertices[2] = vec3( 0.0f, -0.2f, 0.0f );
+
+	process(tri);
+
+	tri.vertices[0] = vec3( 0.0f, 0.0f, 1.2f );
+	tri.vertices[1] = vec3( -0.4f, 0.0f, 0.0f );
+	tri.vertices[2] = vec3( 0.0f, -0.2f, 0.0f );
 
 	process(tri);
 }
@@ -84,7 +96,7 @@ void Boid::render(){
 	glTranslatef(position.x, position.y, position.z);
 
 	vec3 axis = cross(velocity, vec3(0, 0, 1));
-	glRotatef(degrees(acos(dot(velocity, vec3(0, 0, 1)))), axis.x, axis.y, axis.z);
+	glRotatef(-degrees(acos(dot(velocity, vec3(0, 0, 1)))), axis.x, axis.y, axis.z);
 	
 
 	glShadeModel(GL_SMOOTH);

@@ -26,12 +26,9 @@ public:
 	cgra::vec3 velocity;
 	cgra::vec3 destination;
 
-	Boid* left;
-	Boid* right;
-	Boid* parent;
-
-	bool emptyLeft = true;
-	bool emptyRight = true;
+	Boid* left = nullptr;
+	Boid* right = nullptr;
+	Boid* parent = nullptr;
 
 	Boid(cgra::vec3 position);
 	void render();

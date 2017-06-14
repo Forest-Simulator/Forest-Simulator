@@ -9,9 +9,9 @@ using namespace cgra;
 
 Flock::Flock(int size){
 	for (int i = 0; i < size - 1; ++i){
-		Boid b = Boid(vec3(rand() % 10, rand() % 10, rand() % 10));
+		Boid *b = new Boid(vec3(rand() % 10, rand() % 10, rand() % 10));
 		boids.push_back(b);
-		arrange(&leader, &b);
+		arrange(&leader, b);
 	}
 } 
 
@@ -22,15 +22,15 @@ void Flock::update(){
 
 	int s = boids.size();
 	for(int i = 0; i < s; ++i){
-		boids[i].destination = boids[i].parent->position;
-		steer(&boids[i]);
-		boids[i].render();
+		boids[i]->destination = boids[i]->parent->position;
+		steer(boids[i]);
+		boids[i]->render();
 	}
 }
 
 void Flock::steer(Boid *b){
 	vec3 v = vec3(0, 0, 0);
-	v += align(b);
+	v += align(b) * 0.001;
 	v += separate(b);
 
 	b->velocity += v;
@@ -76,18 +76,16 @@ vec3 Flock::separate(Boid *b){
 
 	int s = boids.size();
 	for(int i = 0; i < s-1; ++i){
-		if(&boids[i] != b){
-			float distance = lengthVector(b->position - boids[i].position);
+		if(boids[i] != b){
+			float distance = lengthVector(b->position - boids[i]->position);
 			if(distance < minimum_separation){
-				vec3 force = b->position - boids[i].position;
+				vec3 force = b->position - boids[i]->position;
 				velocity += normalizeVector(force);
 
 				++neighbours;
 			}
 		}
 	}
-
-	
 
 	if(neighbours > 0){
 		if(velocity.x != 0){velocity.x /= neighbours;}
@@ -103,12 +101,12 @@ void Flock::setDestination(vec3 dest){
 }
 
 void Flock::arrange(Boid *node, Boid *b){
-	if(node->left != nullptr){
+	if(node->left == nullptr){
 		node->left = b;
 		b->parent = node;
 		return;
 	}
-	else if(node->right != nullptr){
+	else if(node->right == nullptr){
 		node->right = b;
 		b->parent = node;
 		return;

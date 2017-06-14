@@ -78,6 +78,7 @@ namespace tree {
 		std::stack<TreeState> stateStack;
 		std::stack<TreePolygon*> polygonStack;
 		std::map<char, RenderFunction> functionMap;
+		std::vector<cgra::vec3> branchTriangles;
 		std::vector<cgra::vec3> branchVertices;
 
 		GLuint displayList = 0;
@@ -104,12 +105,9 @@ namespace tree {
 		void increaseLineWidth();
 		void decreaseLineWidth();
 
-		void headingBegin();
-		void headingEnd();
-		cgra::vec3 getCrossProductOfZAxisAndHeading();
-		float getAngleBetweenZAxisAndHeading();
 		void createFromString();
 		void createDisplayList();
+		void turnPointsToTriangles(cgra::vec3, cgra::vec3, float);
 	public:
 		Tree();
 		Tree(cgra::vec3, std::vector<std::string>, float, float, std::vector<cgra::vec3>);

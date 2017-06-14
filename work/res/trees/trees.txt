@@ -1,26 +1,12 @@
 start
-axiom		FF
-startLength	1.0 1.0
-branchAngle	22.5
-generations	3
-colours		0.12 0.58 0.18	0.3 0.66 0.23	0.44 0.55 0.07	0.51 0.83 0.21
-rulestart
-	match		FF
-	transform	FF[&FF^F][^FF&F]
-	rulechance	2
-ruleend
+name		Pretend
+axiom		F
+startLength	1.0 2.0
+branchAngle	25.0
+probability	0.2
+generations	2
 rulestart
 	match		F
-	transform	FF[-FF+F][+FF-F]
-	rulechance	3
-ruleend
-rulestart
-	match		F
-	transform	FFS
-	rulechance	2
-ruleend
-rulestart
-	match		S
-	transform	[!!!!’’’&&{-f.+f.+f.-|-f.+f.+f.}]
+	transform	FF-[/+F-F-FS]+[\\-F+F+FS]
 ruleend
 end

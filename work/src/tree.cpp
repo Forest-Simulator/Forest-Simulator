@@ -175,7 +175,7 @@ void Tree::createDisplayList() {
 	displayList = glGenLists(1);
 	glNewList(displayList, GL_COMPILE);
 
-	drawAxis();
+	// drawAxis();
 
 	glRotatef(-90, 1, 0, 0);
 
@@ -206,6 +206,60 @@ void Tree::render() {
 	glPopMatrix();
 }
 
+void Tree::turnPointsToTriangles(vec3 posStart, vec3 posEnd, float radiusStart) {
+	vec3 topLeft = vec3(posEnd.x - radiusStart, posEnd.y, posEnd.z);
+	vec3 topRight = vec3(posEnd.x, posEnd.y + radiusStart, posEnd.z);
+	vec3 botRight = vec3(posStart.x, posStart.y + radiusStart, posStart.z);
+	vec3 botLeft = vec3(posStart.x - radiusStart, posStart.y, posStart.z);
+
+	branchVertices.push_back(topLeft);
+	branchVertices.push_back(topRight);
+	branchVertices.push_back(botRight);
+
+	branchVertices.push_back(topLeft);
+	branchVertices.push_back(botLeft);
+	branchVertices.push_back(botRight);
+
+	topLeft = topRight;
+	topRight = vec3(posEnd.x + radiusStart, posEnd.y, posEnd.z);
+	botLeft = botRight;
+	botRight = vec3(posStart.x + radiusStart, posStart.y, posStart.z);
+
+	branchVertices.push_back(topLeft);
+	branchVertices.push_back(topRight);
+	branchVertices.push_back(botRight);
+
+	branchVertices.push_back(topLeft);
+	branchVertices.push_back(botLeft);
+	branchVertices.push_back(botRight);
+
+	topLeft = topRight;
+	topRight = vec3(posEnd.x, posEnd.y - radiusStart, posEnd.z);
+	botLeft = botRight;
+	botRight = vec3(posStart.x, posStart.y - radiusStart, posStart.z);
+
+	branchVertices.push_back(topLeft);
+	branchVertices.push_back(topRight);
+	branchVertices.push_back(botRight);
+
+	branchVertices.push_back(topLeft);
+	branchVertices.push_back(botLeft);
+	branchVertices.push_back(botRight);
+
+	topLeft = topRight;
+	topRight = vec3(posEnd.x - radiusStart, posEnd.y, posEnd.z);
+	botLeft = botRight;
+	botRight = vec3(posStart.x - radiusStart, posStart.y, posStart.z);
+
+	branchVertices.push_back(topLeft);
+	branchVertices.push_back(topRight);
+	branchVertices.push_back(botRight);
+
+	branchVertices.push_back(topLeft);
+	branchVertices.push_back(botLeft);
+	branchVertices.push_back(botRight);
+}
+
 std::vector<cgra::vec3> Tree::getBranchVertices() {
 	return branchVertices;
 }
@@ -222,14 +276,23 @@ void Tree::drawBranch() {
 	vec3 posEnd = translate(posStart, move);
 	state.position = posEnd;
 
-	branchVertices.push_back(posStart);
-	branchVertices.push_back(posEnd);
+	float radiusStart = 0.2;
+	turnPointsToTriangles(posStart, posEnd, radiusStart);
+
+	vec3 topLeft = vec3(posEnd.x - radiusStart, posEnd.y, posEnd.z);
+	vec3 topRight = vec3(posEnd.x, posEnd.y + radiusStart, posEnd.z);
+	vec3 botRight = vec3(posStart.x, posStart.y + radiusStart, posStart.z);
+	vec3 botLeft = vec3(posStart.x - radiusStart, posStart.y, posStart.z);
 
 	tMaterial();
-	glBegin(GL_LINES);
-		glVertex3f(posStart.x, posStart.y, posStart.z);
-		glVertex3f(posEnd.x, posEnd.y, posEnd.z);
-	glEnd();
+
+	for(int i = 0; i < branchVertices.size(); i += 3) {
+		glBegin(GL_TRIANGLES);
+			glVertex3f(branchVertices[i].x, branchVertices[i].y, branchVertices[i].z);
+			glVertex3f(branchVertices[i+1].x, branchVertices[i+1].y, branchVertices[i+1].z);
+			glVertex3f(branchVertices[i+2].x, branchVertices[i+2].y, branchVertices[i+2].z);
+		glEnd();
+	}
 }
 
 void Tree::moveForwardPlaceVertex() {
@@ -249,7 +312,6 @@ void Tree::placeVertex() {
 		TreePolygon* tp = polygonStack.top();
 		tp->vertices.push_back(state.position);
 	}
-	// glVertex3f(state.position.x, state.position.y, state.position.z);
 }
 
 void Tree::turnLeft() {

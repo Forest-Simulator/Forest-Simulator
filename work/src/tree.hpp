@@ -5,6 +5,7 @@
 
 #include "opengl.hpp"
 #include "cgra_math.hpp"
+#include "triangle.hpp"
 
 namespace tree {
 
@@ -15,6 +16,8 @@ namespace tree {
 	struct TreeState {
 		float angle;
 		float length;
+		float radiusDecay = 0.05;
+		float radiusStart = 0.4;
 		int colourIndex = 0;
 		cgra::mat4 orientation = cgra::mat4(
 			cgra::vec4(1, 0, 0, 0),
@@ -78,8 +81,9 @@ namespace tree {
 		std::stack<TreeState> stateStack;
 		std::stack<TreePolygon*> polygonStack;
 		std::map<char, RenderFunction> functionMap;
-		std::vector<cgra::vec3> branchTriangles;
-		std::vector<cgra::vec3> branchVertices;
+		std::vector<cgra::vec3> vertices;
+		std::vector<cgra::vec3> normals;
+		std::vector<Triangle> triangles;
 
 		GLuint displayList = 0;
 
@@ -107,7 +111,8 @@ namespace tree {
 
 		void createFromString();
 		void createDisplayList();
-		void turnPointsToTriangles(cgra::vec3, cgra::vec3, float);
+		void turnPointsToTriangles(cgra::vec3, cgra::vec3);
+		void makeTriangle(cgra::vec3, cgra::vec3, cgra::vec3);
 	public:
 		Tree();
 		Tree(cgra::vec3, std::vector<std::string>, float, float, std::vector<cgra::vec3>);

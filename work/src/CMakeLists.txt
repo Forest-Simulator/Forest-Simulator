@@ -8,6 +8,7 @@ SET(headers
 	"cgra_math.hpp"	
 	"cgra_geometry.hpp"
 	"opengl.hpp"
+	"triangle.hpp"
 	"heightmap.hpp"
 	"lsystem.hpp"
 	"tree.hpp"

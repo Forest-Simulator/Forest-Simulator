@@ -5,6 +5,7 @@
 
 #include "opengl.hpp"
 #include "cgra_math.hpp"
+#include "triangle.hpp"
 
 namespace hmap {
 
@@ -19,18 +20,6 @@ namespace hmap {
 		void print() {
 			std::cout << "Point(" << x << ", " << y << ")" << std::endl;
 		}
-	};
-
-
-	struct Triangle {
-		std::vector<int> vertices;
-		std::vector<int> normals;
-		Triangle() {};
-		Triangle(int v1, int v2, int v3) {
-			vertices.push_back(v1);
-			vertices.push_back(v2);
-			vertices.push_back(v3);
-		};
 	};
 
 	class Heightmap {

@@ -1,12 +1,53 @@
 start
 name		Pretend
-axiom		F
+axiom		A
 startLength	1.0 2.0
 branchAngle	25.0
 probability	0.2
-generations	2
+generations	5
+colours		0.12 0.58 0.18	0.3 0.66 0.23	0.44 0.55 0.07	0.51 0.83 0.21
 rulestart
-	match		F
-	transform	FF-[/+F-F-FS]+[\\-F+F+FS]
+	match		A
+	transform	D’D-[’/+B-B-B]+[\\-B+B+B]
+ruleend
+rulestart
+	match		D
+	transform	FF
+ruleend
+rulestart
+	match		B
+	transform	C’C-[’/+CS-CS-CS]+[\\-CS+CS+CS]
+ruleend
+rulestart
+	match		C
+	transform	FR
+ruleend
+rulestart
+	match		R
+	transform	SSS
+ruleend
+rulestart
+	match		S
+	transform	[!!!!!!’’&&∧∧{-f.+f.+f.-|-f.+f.+f.}]
+	rulechance	3
+ruleend
+rulestart
+	match		S
+	transform	[!!!!!!’’-^^^^^{-f.+f.+f.-|-f.+f.+f.}]
+	rulechance	3
+ruleend
+rulestart
+	match		S
+	transform	[!!!!!!’’&&∧∧{-f.+f.+f.-|-f.+f.+f.}]
+	rulechance	3
+ruleend
+rulestart
+	match		S
+	transform	[!!!!!!’’\\\-^^^^^{-f.+f.+f.-|-f.+f.+f.}]
+	rulechance	3
+ruleend
+rulestart
+	match		s
+	transform	[!!!!!!’’////^^^^^{-f.+f.+f.-|-f.+f.+f.}]
 ruleend
 end

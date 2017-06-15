@@ -22,74 +22,18 @@ void tMaterial() {
 	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 }
 
-void redMaterial() {
-	GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 1.0 };
-	GLfloat mat_diffuse[] = { 1.0, 0.0, 0.0, 1.0 };
-	GLfloat mat_shininess[] = { 30.0 };
-
-	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
-	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-}
-
-void blueMaterial() {
-	GLfloat mat_specular[] = { 0.0, 0.0, 1.0, 1.0 };
-	GLfloat mat_diffuse[] = { 0.0, 0.0, 1.0, 1.0 };
-	GLfloat mat_shininess[] = { 30.0 };
-
-	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
-	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-}
-
-void greenMaterial() {
-	GLfloat mat_specular[] = { 0.0, 1.0, 0.0, 1.0 };
-	GLfloat mat_diffuse[] = { 0.0, 1.0, 0.0, 1.0 };
-	GLfloat mat_shininess[] = { 30.0 };
-
-	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
-	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-}
-
 void setMaterial(vec3 colour) {
 	GLfloat mat_specular[] = { colour.x, colour.y, colour.z, 1.0 };
 	GLfloat mat_diffuse[] = { colour.x, colour.y, colour.z, 1.0 };
 	GLfloat mat_shininess[] = { 30.0 };
 
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mat_diffuse);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess);
-}
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
-void drawAxis() {
-	float radius = 0.02;
-	float axisLength = 10.0;
-
-	// Y Axis
-	glPushMatrix();
-		redMaterial();
-		glColor3f(1.0, 0.0, 0.0);
-		glRotatef(-90.0, 1.0, 0.0, 0.0);
-		cgraCylinder(radius, radius, axisLength);
-	glPopMatrix();
-
-	// X Axis
-	glPushMatrix();
-		blueMaterial();
-		glColor3f(0.0, 0.0, 1.0);
-		glRotatef(-90.0, 0.0, 1.0, 0.0);
-		cgraCylinder(radius, radius, axisLength);
-	glPopMatrix();
-
-	// Z Axis
-	glPushMatrix();
-		greenMaterial();
-		glColor3f(0.0, 0.0, 1.0);
-		cgraCylinder(radius, radius, axisLength);
-	glPopMatrix();
-
-	tMaterial();
+	glMaterialfv(GL_BACK, GL_SPECULAR, mat_specular);
+	glMaterialfv(GL_BACK, GL_DIFFUSE, mat_diffuse);
+	glMaterialfv(GL_BACK, GL_SHININESS, mat_shininess);
 }
 
 vec3 translate(vec3 start, vec3 translation) {
@@ -208,13 +152,12 @@ void Tree::render() {
 }
 
 void Tree::turnPointsToTriangles(vec3 posStart, vec3 posEnd) {
-
 	float radiusEnd = max(state.radiusStart - state.radiusDecay, 0.1f);
 
 	vec3 topLeft = vec3(posEnd.x - radiusEnd, posEnd.y, posEnd.z);
 	vec3 topRight = vec3(posEnd.x, posEnd.y + radiusEnd, posEnd.z);
-	vec3 botRight = vec3(posStart.x, posStart.y + state.radiusStart, posStart.z);
 	vec3 botLeft = vec3(posStart.x - state.radiusStart, posStart.y, posStart.z);
+	vec3 botRight = vec3(posStart.x, posStart.y + state.radiusStart, posStart.z);
 
 	makeTriangle(topLeft, topRight, botRight);
 	makeTriangle(botRight, botLeft, topLeft);

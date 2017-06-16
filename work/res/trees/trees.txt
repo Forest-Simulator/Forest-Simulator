@@ -5,7 +5,7 @@ startLength	1.0 2.0
 branchAngle	25.0
 probability	0.2
 generations	5
-colours		0.12 0.58 0.18	0.3 0.66 0.23	0.44 0.55 0.07	0.51 0.83 0.21
+colours		0.588 0.196 0.55	0.549 0.251 0.184	0.949 0.82 0.431	0.851 0.533 0.294	0.251 0.067 0.145
 rulestart
 	match		A
 	transform	D’D-[’/+B-B-B]+[\\-B+B+B]
@@ -70,7 +70,6 @@ axiom		X
 startLength	1.0 1.0
 branchAngle	25.0
 generations	3
-colours		0.12 0.58 0.18	0.3 0.66 0.23	0.44 0.55 0.07	0.51 0.83 0.21
 rulestart
 	match		X
 	transform	F[\X][X]F[&\X]^/FX

@@ -175,11 +175,21 @@ void initHeightmap() {
 
 void initTrees() {
 	treeFactory = new tree::TreeFactory("../work/res/trees/trees.txt");
-	int halfSize = heightmap->getSize() / 2;
-	t = treeFactory->generate(vec3(0, 0, 0));
 
-	for(int x = -halfSize; x < halfSize; x += 4) {
-		trees.push_back(treeFactory->generate(vec3(x, -x, 0)));
+	int incr = 8;
+	float halfIncr = incr / 2;
+	int halfSize = (heightmap->getSize() / 2) - incr;
+	int y = halfSize;
+	
+	for(int x = -halfSize; x < halfSize; x += incr) {
+		// Randomly offset the trees
+		float offsetX = math::random(-halfIncr, halfIncr);
+		float offsetY = math::random(-halfIncr, halfIncr);
+		trees.push_back(treeFactory->generate(vec3(x+offsetX, -y+offsetY, 0)));
+		if(x+incr == halfSize && y > -halfSize) {
+			y -= incr;
+			x = -halfSize;
+		}
 	}
 
 	// Trees have been generated, so release the treeFactory object
@@ -193,19 +203,9 @@ void initFlock(){
 	boid = new Boid(vec3(1, 1, 1));
 }
 
-void grassMaterial() {
-	GLfloat mat_specular[] = { 0.0, 0.36, 0.04, 1.0 };
-	GLfloat mat_diffuse[] = { 0.0, 0.36, 0.04, 1.0 };
-	GLfloat mat_shininess[] = { 30.0 };
-
-	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
-	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-}
-
-void treeMaterial() {
-	GLfloat mat_specular[] = { 0.51, 0.32, 0.0, 1.0 };
-	GLfloat mat_diffuse[] = { 0.51, 0.32, 0.0, 1.0 };
+void groundMaterial() {
+	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat mat_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat mat_shininess[] = { 30.0 };
 
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
@@ -233,7 +233,7 @@ void renderObjects(int width, int height) {
 		glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE); 
 
 		glPushMatrix();
-			grassMaterial();
+			groundMaterial();
 			heightmap->render();
 		glPopMatrix();
 

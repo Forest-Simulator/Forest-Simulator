@@ -18,11 +18,13 @@
 #include <vector>
 
 #include "cgra_math.hpp"
+#include "simple_shader.hpp"
 #include "opengl.hpp"
 #include "heightmap.hpp"
 #include "lsystem.hpp"
 #include "tree.hpp"
 #include "treefactory.hpp"
+
 #include "flock.hpp"
 
 using namespace std;
@@ -47,6 +49,11 @@ vec2 g_mousePosition;
 float g_pitch = 0;
 float g_yaw = 0;
 float g_zoom = 1.0;
+
+// Shader code
+//
+bool g_useShader = false;
+GLuint g_shader = 0;
 
 // Base Heightmap to be rendered upon
 //
@@ -141,11 +148,25 @@ void initAmbientLight() {
 	glEnable(GL_LIGHT0);
 }
 
-
 void initLight() {
 	initAmbientLight();
 }
 
+void initShader() {
+	// To create a shader program we use a helper function
+	// We pass it an array of the types of shaders we want to compile
+	// and the corrosponding locations for the files of each stage
+	g_shader = makeShaderProgramFromFile(
+		{
+			GL_VERTEX_SHADER,
+			GL_FRAGMENT_SHADER
+		},
+		{
+			"../work/res/shaders/vertex_shader.vert",
+			"../work/res/shaders/fragment_shader.frag"
+		}
+	);
+}
 
 void initHeightmap() {
 	heightmap = new hmap::Heightmap(5);
@@ -258,8 +279,16 @@ void render(int width, int height) {
 
 	// Enable Drawing texures
 	glEnable(GL_TEXTURE_2D);
+
+	// Bind shader
+	glUseProgram(g_shader);
+
+	glUniform1i(glGetUniformLocation(g_shader, "texture0"), 0);
 	
 	renderObjects(width, height);
+
+	// Unbind shader
+	glUseProgram(0);
 
 	// Disable flags for cleanup (optional)
 	glDisable(GL_TEXTURE_2D);
@@ -344,6 +373,7 @@ int main(int argc, char **argv) {
 	// Initialize Geometry/Material/Lights
 	initFlock();
 	initHeightmap();
+	initShader();
 	initTrees();
 	initLight();
 

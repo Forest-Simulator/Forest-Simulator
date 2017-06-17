@@ -11,14 +11,15 @@ Flock::Flock(int size){
 	for (int i = 0; i < size - 1; ++i){
 		Boid *b = new Boid(vec3(rand() % 10, rand() % 10, rand() % 10));
 		boids.push_back(b);
-		arrange(&leader, b);
+		arrange(leader, b);
 	}
+	oct_tree = new OctTree(vec3(-50, -50, -50), vec3(100, 100, 100), boids);
 } 
 
 void Flock::update(){
-	leader.destination = destination;
-	steer(&leader);
-	leader.render();
+	leader->destination = destination;
+	steer(leader);
+	leader->render();
 
 	int s = boids.size();
 	for(int i = 0; i < s; ++i){
@@ -26,11 +27,16 @@ void Flock::update(){
 		steer(boids[i]);
 		boids[i]->render();
 	}
+
+	delete oct_tree;
+	oct_tree = nullptr;
+
+	oct_tree = new OctTree(vec3(-50, -50, -50), vec3(100, 100, 100), boids);
 }
 
 void Flock::steer(Boid *b){
 	vec3 v = vec3(0, 0, 0);
-	v += align(b) * 0.001;
+	v += align(b) * 0.006;
 	v += separate(b);
 
 	b->velocity += v;
@@ -78,7 +84,7 @@ vec3 Flock::separate(Boid *b){
 	for(int i = 0; i < s-1; ++i){
 		if(boids[i] != b){
 			float distance = lengthVector(b->position - boids[i]->position);
-			if(distance < minimum_separation){
+			if(distance < b->minimum_separation){
 				vec3 force = b->position - boids[i]->position;
 				velocity += normalizeVector(force);
 
@@ -119,4 +125,17 @@ void Flock::arrange(Boid *node, Boid *b){
 			arrange(node->right, b);
 		}
 	}
+}
+
+void Flock::render(){
+	leader->render();
+
+	int s = boids.size();
+	for(int i = 0; i < s; ++i){
+		boids[i]->render();
+	}
+}
+
+void Flock::showOctTree(){
+	oct_tree->renderTree(0);
 }

@@ -30,6 +30,8 @@ public:
 	Boid* right = nullptr;
 	Boid* parent = nullptr;
 
+	float minimum_separation = 0.1f;
+
 	Boid(cgra::vec3 position);
 	void render();
 };

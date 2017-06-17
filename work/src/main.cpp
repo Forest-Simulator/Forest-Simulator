@@ -60,6 +60,11 @@ vector<tree::Tree*> trees;
 Flock* flock;
 Boid* boid;
 
+//flags
+//
+bool showOctTree = false;
+bool debugMode = false;
+
 
 // Mouse Button callback
 // Called for mouse movement event on since the last glfwPollEvents
@@ -92,13 +97,28 @@ void scrollCallback(GLFWwindow *win, double xoffset, double yoffset) {
 	g_zoom -= yoffset * g_zoom * 0.2;
 }
 
+void step(){
+	flock->update();	
+}
+
 
 // Keyboard callback
 // Called for every key event on since the last glfwPollEvents
 //
 void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 	// cout << "Key Callback :: key=" << key << "scancode=" << scancode
-	// 	<< "action=" << action << "mods=" << mods << endl;
+	// << "action=" << action << "mods=" << mods << endl;
+	if(key == 83 && action == 1){
+		showOctTree = !showOctTree;
+	}
+	if(key == 68 && action == 1){
+		debugMode = !debugMode;
+	}
+	if(key == 65 && action == 1){
+		if(debugMode){
+			step();
+		}
+	}
 }
 
 
@@ -203,6 +223,8 @@ void boidMaterial() {
 }
 
 
+
+
 void renderObjects(int width, int height) {
 	// Render a single square as our geometry
 	// You would normally render your geometry here
@@ -225,7 +247,15 @@ void renderObjects(int width, int height) {
 		glPopMatrix();
 
 		boidMaterial();
-		flock->update();
+		if(!debugMode){
+			flock->update();
+		}
+		else{
+			flock->render();
+		}
+		if(showOctTree){
+			flock->showOctTree();
+		}
 		//boid->render();
 
 
@@ -241,7 +271,7 @@ void renderObjects(int width, int height) {
 void render(int width, int height) {
 
 	// Light blue background
-	glClearColor(0.49f, 0.65f, 1.0f, 1.0f);
+	glClearColor(0.66f, 0.77f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 

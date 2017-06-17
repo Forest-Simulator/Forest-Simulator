@@ -1,18 +1,19 @@
 #include "cgra_math.hpp"
 #include "opengl.hpp"
-#include "boid.hpp"
+#include "oct_tree.hpp"
 
 using namespace std;
 using namespace cgra;
 
 class Flock{
 private:
-	Boid leader = Boid(vec3(0, 0, 0));
+	OctTree *oct_tree = nullptr;
+	
+	Boid *leader = new Boid(vec3(0, 0, 0));
 	vec3 destination = vec3(15, 15, 15);
 	vector<Boid*> boids;
 
-	float minimum_separation = 1;
-	float max_speed = 0.07f;
+	float max_speed = 0.2f;
 
 	void steer(Boid *b);
 	float lengthVector(cgra::vec3 v);
@@ -25,4 +26,6 @@ public:
 	Flock(int size);
 	void setDestination(vec3 dest);
 	void update();
+	void showOctTree();
+	void render();
 };

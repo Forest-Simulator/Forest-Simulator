@@ -15,6 +15,7 @@ SET(headers
 	"treefactory.hpp"
 	"boid.hpp"
 	"flock.hpp"
+	"oct_tree.hpp"
 )
 
 
@@ -27,6 +28,7 @@ SET(sources
 	"treefactory.cpp"
 	"boid.cpp"
 	"flock.cpp"
+	"oct_tree.cpp"
 )
 
 # Add executable target and link libraries

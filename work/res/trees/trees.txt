@@ -64,11 +64,10 @@ rulestart
 ruleend
 end
 
-
 start
 axiom		X
 startLength	1.0 1.0
-branchAngle	25.0
+branchAngle	22.5
 generations	3
 rulestart
 	match		X
@@ -77,5 +76,11 @@ ruleend
 rulestart
 	match		F
 	transform	FF
+	rulechance	3
+ruleend
+rulestart
+	match		F
+	transform	FF[-FF][^+FF]
+	rulechance	5
 ruleend
 end

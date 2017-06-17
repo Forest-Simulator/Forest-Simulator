@@ -55,11 +55,15 @@ float g_zoom = 1.0;
 bool g_useShader = false;
 GLuint g_shader = 0;
 
+// Command line argument defaults
+//
+int mapSize = 4;
+string treeFile = "../work/res/trees/trees.txt";
+
 // Base Heightmap to be rendered upon
 //
 hmap::Heightmap* heightmap;
 tree::TreeFactory* treeFactory;
-tree::Tree* t;
 vector<tree::Tree*> trees;
 
 //Flock of birds
@@ -169,16 +173,16 @@ void initShader() {
 }
 
 void initHeightmap() {
-	heightmap = new hmap::Heightmap(5);
+	heightmap = new hmap::Heightmap(mapSize);
 	heightmap->generateHeightmap();
 }
 
 void initTrees() {
-	treeFactory = new tree::TreeFactory("../work/res/trees/trees.txt");
+	treeFactory = new tree::TreeFactory(treeFile);
 
 	int incr = 8;
 	float halfIncr = incr / 2;
-	int halfSize = (heightmap->getSize() / 2) - incr;
+	int halfSize = (heightmap->getSize() - incr) / 2;
 	int y = halfSize;
 	
 	for(int x = -halfSize; x < halfSize; x += incr) {
@@ -206,7 +210,7 @@ void initFlock(){
 void groundMaterial() {
 	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat mat_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat mat_shininess[] = { 30.0 };
+	GLfloat mat_shininess[] = { 50.0 };
 
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
@@ -241,8 +245,6 @@ void renderObjects(int width, int height) {
 			for(tree::Tree* t : trees) {
 				t->render();
 			}
-
-			// t->render();
 		glPopMatrix();
 
 		boidMaterial();
@@ -253,8 +255,6 @@ void renderObjects(int width, int height) {
 	glPopMatrix();
 
 	glFlush();
-
-
 }
 
 // Draw function
@@ -312,6 +312,20 @@ int main(int argc, char **argv) {
 		abort(); // Unrecoverable error
 	}
 
+
+	if(argc >= 2) {
+		int tempSize = *argv[1] - '0';
+		if(0 > tempSize || tempSize > 5) {
+			cerr << "Error: Map Size " << tempSize << " is out of bounds (0 - 5)" << endl;
+			abort();
+		}
+		mapSize = tempSize;
+	}
+
+	if(argc == 3) {
+		treeFile = argv[2];
+	}
+
 	// Get the version for GLFW for later
 	int glfwMajor, glfwMinor, glfwRevision;
 	glfwGetVersion(&glfwMajor, &glfwMinor, &glfwRevision);
@@ -326,8 +340,6 @@ int main(int argc, char **argv) {
 	// Make the g_window's context is current.
 	// If we have multiple windows we will need to switch contexts
 	glfwMakeContextCurrent(g_window);
-
-
 
 	// Initialize GLEW
 	// must be done after making a GL context current (glfwMakeContextCurrent in this case)

@@ -24,7 +24,7 @@ varying vec3 vPosition;
 varying vec2 vTextureCoord0;
 varying vec2 vNormalMapCoord;
 
-#define MAX_LIGHTS 2
+#define MAX_LIGHTS 3
 
 vec4 calculateLightIntensity(int light, vec3 normal) {
 	// Light direction, a normal vertex from the position of the light 

@@ -70,6 +70,7 @@ vector<tree::Tree*> trees;
 //Flock of birds
 //
 Flock* flock;
+vector<Flock*> flocks;
 Boid* boid;
 
 
@@ -189,9 +190,26 @@ void initSecondAmbientLight() {
 
 }
 
+void initDirectionalLight() {
+	float position[] = { 5.0f, 40.0f, 5.0f, 1.0f };
+	float light[] = { 1.0f, 1.0f, 0.878f, 0.5f };
+	float noLight[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	float exponent[] = { 2.0f };
+	float attenuation[] = { 0.0f };
+
+	glLightfv(GL_LIGHT2, GL_LINEAR_ATTENUATION, attenuation);
+	glLightfv(GL_LIGHT2, GL_POSITION, position);
+	glLightfv(GL_LIGHT2, GL_DIFFUSE, light);
+	glLightfv(GL_LIGHT2, GL_SPECULAR, light);
+	// glLightfv(GL_LIGHT2, GL_AMBIENT, noLight);
+
+	glEnable(GL_LIGHT2);
+}
+
 void initLights() {
 	initAmbientLight();
 	initSecondAmbientLight();
+	initDirectionalLight();
 }
 
 void initShader() {
@@ -242,6 +260,10 @@ void initTrees() {
 
 void initFlock(){
 	flock = new Flock(200);
+	for(int i = 0; i < 3; i++) {
+		Flock* f = new Flock(10);
+		flocks.push_back(f);
+	}
 	boid = new Boid(vec3(1, 1, 1));
 }
 
@@ -292,7 +314,9 @@ void renderObjects(int width, int height) {
 		glPopMatrix();
 
 		boidMaterial();
-		flock->update();
+		for(Flock* f : flocks) {
+			f->update();
+		}
 		//boid->render();
 
 

@@ -19,6 +19,7 @@
 
 #include "cgra_math.hpp"
 #include "simple_shader.hpp"
+#include "simple_image.hpp"
 #include "opengl.hpp"
 #include "heightmap.hpp"
 #include "lsystem.hpp"
@@ -52,8 +53,8 @@ float g_zoom = 1.0;
 
 // Shader code
 //
-bool g_useShader = false;
 GLuint g_shader = 0;
+GLuint snow_texture = 0;
 
 // Command line argument defaults
 //
@@ -139,21 +140,58 @@ void setupCamera(int width, int height) {
 	glRotatef(g_yaw, 0, 1, 0);
 }
 
+GLuint getTexture(string filename) {
+	GLuint texture = 0;
+	Image tex("../work/res/textures/" + filename);
+
+	glGenTextures(1, &texture);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	// Setup sampling strategies
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, tex.w, tex.h, tex.glFormat(), GL_UNSIGNED_BYTE, tex.dataPointer());
+
+	return texture;
+}
+
+void initTextures() {
+	snow_texture = getTexture("snow.jpg");
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, snow_texture);
+}
+
 void initAmbientLight() {
-	float noLight[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	float ambient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+	float light[] = { 0.3f, 0.3f, 0.3f, 1.0f };
 	
-	// Remove diffuse and specular components for the 
-	// ambient light
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, ambient);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, ambient);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, light);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, light);
 
 	glEnable(GL_LIGHT0);
 }
 
-void initLight() {
+void initSecondAmbientLight() {
+	float light[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, light);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, light);
+	glLightfv(GL_LIGHT1, GL_AMBIENT, light);
+
+	glEnable(GL_LIGHT1);
+
+}
+
+void initLights() {
 	initAmbientLight();
+	initSecondAmbientLight();
 }
 
 void initShader() {
@@ -208,9 +246,12 @@ void initFlock(){
 }
 
 void groundMaterial() {
+	glUniform1f(glGetUniformLocation(g_shader, "texture_multiplier"), 1.0f);
+	glBindTexture(GL_TEXTURE_2D, snow_texture);
+
 	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat mat_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat mat_shininess[] = { 50.0 };
+	GLfloat mat_shininess[] = { 100.0 };
 
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
@@ -218,6 +259,9 @@ void groundMaterial() {
 }
 
 void boidMaterial() {
+	glUniform1f(glGetUniformLocation(g_shader, "texture_multiplier"), 0.0f);
+	glBindTexture(GL_TEXTURE_2D, snow_texture);
+
 	GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1.0 };
 	GLfloat mat_diffuse[] = { 0.8, 0.8, 0.8, 1.0 };
 	GLfloat mat_shininess[] = { 0 };
@@ -383,11 +427,12 @@ int main(int argc, char **argv) {
 
 
 	// Initialize Geometry/Material/Lights
+	initTextures();
 	initFlock();
 	initHeightmap();
 	initShader();
 	initTrees();
-	initLight();
+	initLights();
 
 	// Loop until the user closes the window
 	while (!glfwWindowShouldClose(g_window)) {

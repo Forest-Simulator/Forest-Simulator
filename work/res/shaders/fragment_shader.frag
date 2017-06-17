@@ -15,10 +15,8 @@
 #version 120
 
 // Constant across both shaders
-// uniform sampler2D texture0;
-// uniform sampler2D normal0;
-// uniform float texture_multiplier;
-// uniform float normal_map_multiplier;
+uniform sampler2D texture0;
+uniform float texture_multiplier;
 
 // Values passed in from the vertex shader
 varying vec3 vNormal;
@@ -26,7 +24,7 @@ varying vec3 vPosition;
 varying vec2 vTextureCoord0;
 varying vec2 vNormalMapCoord;
 
-#define MAX_LIGHTS 5
+#define MAX_LIGHTS 2
 
 vec4 calculateLightIntensity(int light, vec3 normal) {
 	// Light direction, a normal vertex from the position of the light 
@@ -55,7 +53,7 @@ vec4 calculateLightIntensity(int light, vec3 normal) {
 
 void main() {
 
-	// vec4 color = vec4(texture2D(texture0, vTextureCoord0 * texture_multiplier).rgb, 1.0);
+	vec4 color = vec4(texture2D(texture0, vTextureCoord0 * texture_multiplier).rgb, 1.0);
 	vec4 finalLightIntensity = vec4(0.0, 0.0, 0.0, 0.0);
 
 	for(int i = 0; i < MAX_LIGHTS; i++) {
@@ -65,5 +63,5 @@ void main() {
 		finalLightIntensity += calculateLightIntensity(i, vNormal);
 	}
 
-	gl_FragColor = finalLightIntensity;
+	gl_FragColor = color * finalLightIntensity;
 }

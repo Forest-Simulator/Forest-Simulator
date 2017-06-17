@@ -15,10 +15,8 @@
 #version 120
 
 // Constant across both shaders
-// uniform sampler2D texture0;
-// uniform sampler2D normal0;
-// uniform float texture_multiplier;
-// uniform float normal_map_multiplier;
+uniform sampler2D texture0;
+uniform float texture_multiplier;
 
 // Values to pass to the fragment shader
 varying vec3 vNormal;

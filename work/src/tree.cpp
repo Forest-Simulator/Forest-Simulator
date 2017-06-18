@@ -13,10 +13,8 @@ using namespace std;
 using namespace tree;
 
 void tMaterial() {
-	// GLfloat mat_specular[] = { 0.51, 0.32, 0.0, 1.0 };
-	// GLfloat mat_diffuse[] = { 0.51, 0.32, 0.0, 1.0 };
-	GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 1.0 };
-	GLfloat mat_diffuse[] = { 1.0, 0.0, 0.0, 1.0 };
+	GLfloat mat_specular[] = { 0.51, 0.32, 0.0, 1.0 };
+	GLfloat mat_diffuse[] = { 0.51, 0.32, 0.0, 1.0 };
 	GLfloat mat_shininess[] = { 30.0 };
 
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);

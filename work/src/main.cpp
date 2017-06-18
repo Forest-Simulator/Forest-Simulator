@@ -263,10 +263,6 @@ void initTrees() {
 	float halfIncr = incr / 2;
 	int halfSize = (heightmap->getSize() - incr) / 2;
 	int y = halfSize;
-
-	int triangleIndex = 0;
-	vector<Triangle> triangles = heightmap->getTriangles();
-	vector<vec3> vertices = heightmap->getVertices();
 	
 	for(int x = -halfSize; x <= halfSize; x += incr) {
 		// Randomly offset the trees
@@ -294,10 +290,8 @@ void groundMaterial() {
 	glUniform1f(glGetUniformLocation(g_shader, "texture_multiplier"), 1.0f);
 	glBindTexture(GL_TEXTURE_2D, snow_texture);
 
-	// GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-	// GLfloat mat_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 1.0 };
-	GLfloat mat_diffuse[] = { 1.0, 0.0, 0.0, 1.0 };
+	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat mat_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat mat_shininess[] = { 100.0 };
 
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
@@ -416,7 +410,7 @@ int main(int argc, char **argv) {
 
 	if(argc >= 2) {
 		int tempSize = *argv[1] - '0';
-		if(0 > tempSize || tempSize > 5) {
+		if(0 > tempSize || tempSize > 6) {
 			cerr << "Error: Map Size " << tempSize << " is out of bounds (0 - 5)" << endl;
 			abort();
 		}

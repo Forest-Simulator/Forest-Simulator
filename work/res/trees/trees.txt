@@ -18,12 +18,12 @@ rulestart
 ruleend
 rulestart
 	match		D
-	transform	FF
+	transform	GG
 	rulechance	2
 ruleend
 rulestart
 	match		D
-	transform	FF[+&FFS]
+	transform	GG[+&GGS]
 	rulechance	2
 ruleend
 rulestart
@@ -32,7 +32,7 @@ rulestart
 ruleend
 rulestart
 	match		C
-	transform	FR
+	transform	GR
 ruleend
 rulestart
 	match		R
@@ -71,16 +71,16 @@ branchAngle	22.5
 generations	3
 rulestart
 	match		X
-	transform	F[\X][X]F[&\X]^/FX
+	transform	G[\X][X]G[&\X]^/GX
 ruleend
 rulestart
-	match		F
-	transform	FF
+	match		G
+	transform	GG
 	rulechance	3
 ruleend
 rulestart
-	match		F
-	transform	FF[-FF][^+FF]
+	match		G
+	transform	GG[-GG][^+GG]
 	rulechance	5
 ruleend
 end

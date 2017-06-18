@@ -18,7 +18,6 @@
 #include <vector>
 
 #include "cgra_math.hpp"
-#include "simple_shader.hpp"
 #include "simple_image.hpp"
 #include "opengl.hpp"
 #include "heightmap.hpp"

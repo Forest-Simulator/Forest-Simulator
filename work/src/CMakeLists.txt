@@ -7,7 +7,6 @@
 SET(headers
 	"cgra_math.hpp"	
 	"cgra_geometry.hpp"
-	"simple_shader.hpp"
 	"simple_image.hpp"
 	"opengl.hpp"
 	"triangle.hpp"

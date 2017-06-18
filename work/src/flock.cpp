@@ -41,7 +41,7 @@ void Flock::update(bool useTree){
 
 void Flock::steer(Boid *b){
 	vec3 v = vec3(0, 0, 0);
-	v += align(b) * 0.006;
+	v += align(b) * 0.015;
 	if(!use_tree){
 		v += separate(b);
 	}

@@ -61,7 +61,7 @@ GLuint snow_texture = 0;
 int mapSize = 4;
 string treeFile = "../work/res/trees/trees.txt";
 bool useOctTree = false;
-int num_boids = 2000;
+int num_boids = 200;
 
 // Base Heightmap to be rendered upon
 //
@@ -422,11 +422,13 @@ int main(int argc, char **argv) {
 	}
 	else if(argc == 4) {
 		treeFile = argv[2];
-		num_boids = *argv[3] - '0';
+		string nBoids = argv[3];
+		num_boids = stoi(nBoids);
 	}
 	else if(argc == 5){
 		treeFile = argv[2];
-		num_boids = *argv[3] - '0';
+		string nBoids = argv[3];
+		num_boids = stoi(nBoids);
 		useOctTree = argv[4];
 	}
 

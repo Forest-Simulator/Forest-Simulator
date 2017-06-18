@@ -66,9 +66,9 @@ end
 ```
 The output of such an L-system would be:
 
-No generations: A
-1st generation: AB
-2nd generation: ABBC
+* No generations: A
+* 1st generation: AB
+* 2nd generation: ABBC
 
 The resulting string is then used to draw a tree in the following way. Specific characters are mapped to 
 functions which carry out certain actions in 3D space. The function mappings are as follows:

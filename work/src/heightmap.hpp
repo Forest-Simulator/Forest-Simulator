@@ -77,5 +77,6 @@ namespace hmap {
 
 		int getSize();
 		std::vector<cgra::vec3> getVertices();
+		std::vector<Triangle> getTriangles();
 	};
 }

@@ -136,6 +136,7 @@ void Heightmap::makeLists() {
 			float y = getAt(Point(x, z));
 
 			vertices.push_back(vec3(worldX, y, worldZ));
+			normals.push_back(vec3(0, 0, 0));
 		}
 	}
 
@@ -158,9 +159,9 @@ void Heightmap::makeLists() {
 
 	// Calculate per face normals iterating over each triangle
 	for(int i = 0; i < int(triangles.size()); i++) {
-		int v1 = triangles[i].vertices[0];
-		int v2 = triangles[i].vertices[1];
-		int v3 = triangles[i].vertices[2];
+		int v1 = triangles[i].vertices2[0].point;
+		int v2 = triangles[i].vertices2[1].point;
+		int v3 = triangles[i].vertices2[2].point;
 
 		// point - point = vector, this gives the vectors of
 		// two sides of the triangle
@@ -171,10 +172,11 @@ void Heightmap::makeLists() {
 		// vectors
 		vec3 faceNormal = cross(v, w);
 
-		// Add the new normal and assign it to the triangle
-		normals.push_back(faceNormal);
+		// Add the new normal and assign it to all vertices in the triangle
 		for(int j = 0; j < 3; j++) {
-			triangles[i].normals.push_back(normals.size() - 1);
+			normals[v1] = normalize(normals[v1] + faceNormal);
+			normals[v2] = normalize(normals[v2] + faceNormal);
+			normals[v3] = normalize(normals[v3] + faceNormal);
 		}
 	}
 
@@ -188,18 +190,24 @@ void Heightmap::createDisplayList() {
 
 	for(int i = 0; i < int(triangles.size()); i++) {
 		Triangle t = triangles[i];
-		vec3 n1 = normals[t.normals[0]];
-		vec3 n2 = normals[t.normals[1]];
-		vec3 n3 = normals[t.normals[2]];
-		glNormal3f(n1.x, n1.y, n1.z);
-		glNormal3f(n2.x, n2.y, n2.z);
-		glNormal3f(n3.x, n3.y, n3.z);
+		vec3 n1 = normals[t.vertices2[0].normal];
+		vec3 n2 = normals[t.vertices2[1].normal];
+		vec3 n3 = normals[t.vertices2[2].normal];
 
-		vec3 v1 = vertices[t.vertices[0]];
-		vec3 v2 = vertices[t.vertices[1]];
-		vec3 v3 = vertices[t.vertices[2]];
+		vec3 v1 = vertices[t.vertices2[0].point];
+		vec3 v2 = vertices[t.vertices2[1].point];
+		vec3 v3 = vertices[t.vertices2[2].point];
+
+		glTexCoord2f(0.0, 0.0);
+		glNormal3f(n1.x, n1.y, n1.z);
 		glVertex3f(v1.x, v1.y, v1.z);
+
+		glTexCoord2f(1.0, 0.0);
+		glNormal3f(n2.x, n2.y, n2.z);
 		glVertex3f(v2.x, v2.y, v2.z);
+
+		glTexCoord2f(1.0, 1.0);
+		glNormal3f(n3.x, n3.y, n3.z);
 		glVertex3f(v3.x, v3.y, v3.z);
 	}
 

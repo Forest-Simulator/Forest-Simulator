@@ -18,11 +18,14 @@
 #include <vector>
 
 #include "cgra_math.hpp"
+#include "simple_shader.hpp"
+#include "simple_image.hpp"
 #include "opengl.hpp"
 #include "heightmap.hpp"
 #include "lsystem.hpp"
 #include "tree.hpp"
 #include "treefactory.hpp"
+
 #include "flock.hpp"
 
 using namespace std;
@@ -48,16 +51,26 @@ float g_pitch = 0;
 float g_yaw = 0;
 float g_zoom = 1.0;
 
+// Shader code
+//
+GLuint g_shader = 0;
+GLuint snow_texture = 0;
+
+// Command line argument defaults
+//
+int mapSize = 4;
+string treeFile = "../work/res/trees/trees.txt";
+
 // Base Heightmap to be rendered upon
 //
 hmap::Heightmap* heightmap;
 tree::TreeFactory* treeFactory;
-tree::Tree* t;
 vector<tree::Tree*> trees;
 
 //Flock of birds
 //
 Flock* flock;
+vector<Flock*> flocks;
 Boid* boid;
 
 //flags
@@ -148,37 +161,115 @@ void setupCamera(int width, int height) {
 	glRotatef(g_yaw, 0, 1, 0);
 }
 
+GLuint getTexture(string filename) {
+	GLuint texture = 0;
+	Image tex("../work/res/textures/" + filename);
+
+	glGenTextures(1, &texture);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	// Setup sampling strategies
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, tex.w, tex.h, tex.glFormat(), GL_UNSIGNED_BYTE, tex.dataPointer());
+
+	return texture;
+}
+
+void initTextures() {
+	snow_texture = getTexture("snow.jpg");
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, snow_texture);
+}
+
 void initAmbientLight() {
-	float noLight[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	float ambient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+	float light[] = { 0.3f, 0.3f, 0.3f, 1.0f };
 	
-	// Remove diffuse and specular components for the 
-	// ambient light
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, ambient);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, ambient);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, light);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, light);
 
 	glEnable(GL_LIGHT0);
 }
 
+void initSecondAmbientLight() {
+	float light[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 
-void initLight() {
-	initAmbientLight();
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, light);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, light);
+	glLightfv(GL_LIGHT1, GL_AMBIENT, light);
+
+	glEnable(GL_LIGHT1);
+
 }
 
+void initDirectionalLight() {
+	float position[] = { 5.0f, 40.0f, 5.0f, 1.0f };
+	float light[] = { 1.0f, 1.0f, 0.878f, 0.5f };
+	float noLight[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	float exponent[] = { 2.0f };
+	float attenuation[] = { 0.0f };
+
+	glLightfv(GL_LIGHT2, GL_LINEAR_ATTENUATION, attenuation);
+	glLightfv(GL_LIGHT2, GL_POSITION, position);
+	glLightfv(GL_LIGHT2, GL_DIFFUSE, light);
+	glLightfv(GL_LIGHT2, GL_SPECULAR, light);
+	// glLightfv(GL_LIGHT2, GL_AMBIENT, noLight);
+
+	glEnable(GL_LIGHT2);
+}
+
+void initLights() {
+	initAmbientLight();
+	initSecondAmbientLight();
+	initDirectionalLight();
+}
+
+void initShader() {
+	// To create a shader program we use a helper function
+	// We pass it an array of the types of shaders we want to compile
+	// and the corrosponding locations for the files of each stage
+	g_shader = makeShaderProgramFromFile(
+		{
+			GL_VERTEX_SHADER,
+			GL_FRAGMENT_SHADER
+		},
+		{
+			"../work/res/shaders/vertex_shader.vert",
+			"../work/res/shaders/fragment_shader.frag"
+		}
+	);
+}
 
 void initHeightmap() {
-	heightmap = new hmap::Heightmap(5);
+	heightmap = new hmap::Heightmap(mapSize);
 	heightmap->generateHeightmap();
 }
 
 void initTrees() {
-	treeFactory = new tree::TreeFactory("../work/res/trees/trees.txt");
-	int halfSize = heightmap->getSize() / 2;
-	t = treeFactory->generate(vec3(0, 0, 0));
+	treeFactory = new tree::TreeFactory(treeFile);
 
-	for(int x = -halfSize; x < halfSize; x += 4) {
-		trees.push_back(treeFactory->generate(vec3(x, -x, 0)));
+	int incr = 8;
+	float halfIncr = incr / 2;
+	int halfSize = (heightmap->getSize() - incr) / 2;
+	int y = halfSize;
+	
+	for(int x = -halfSize; x < halfSize; x += incr) {
+		// Randomly offset the trees
+		float offsetX = math::random(-halfIncr, halfIncr);
+		float offsetY = math::random(-halfIncr, halfIncr);
+		trees.push_back(treeFactory->generate(vec3(x+offsetX, -y+offsetY, 0)));
+		if(x+incr == halfSize && y > -halfSize) {
+			y -= incr;
+			x = -halfSize;
+		}
 	}
 
 	// Trees have been generated, so release the treeFactory object
@@ -189,23 +280,20 @@ void initTrees() {
 
 void initFlock(){
 	flock = new Flock(200);
+	for(int i = 0; i < 3; i++) {
+		Flock* f = new Flock(10);
+		flocks.push_back(f);
+	}
 	boid = new Boid(vec3(1, 1, 1));
 }
 
-void grassMaterial() {
-	GLfloat mat_specular[] = { 0.0, 0.36, 0.04, 1.0 };
-	GLfloat mat_diffuse[] = { 0.0, 0.36, 0.04, 1.0 };
-	GLfloat mat_shininess[] = { 30.0 };
+void groundMaterial() {
+	glUniform1f(glGetUniformLocation(g_shader, "texture_multiplier"), 1.0f);
+	glBindTexture(GL_TEXTURE_2D, snow_texture);
 
-	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
-	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-}
-
-void treeMaterial() {
-	GLfloat mat_specular[] = { 0.51, 0.32, 0.0, 1.0 };
-	GLfloat mat_diffuse[] = { 0.51, 0.32, 0.0, 1.0 };
-	GLfloat mat_shininess[] = { 30.0 };
+	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat mat_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat mat_shininess[] = { 100.0 };
 
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
@@ -213,6 +301,9 @@ void treeMaterial() {
 }
 
 void boidMaterial() {
+	glUniform1f(glGetUniformLocation(g_shader, "texture_multiplier"), 0.0f);
+	glBindTexture(GL_TEXTURE_2D, snow_texture);
+
 	GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1.0 };
 	GLfloat mat_diffuse[] = { 0.8, 0.8, 0.8, 1.0 };
 	GLfloat mat_shininess[] = { 0 };
@@ -234,7 +325,7 @@ void renderObjects(int width, int height) {
 		glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE); 
 
 		glPushMatrix();
-			grassMaterial();
+			groundMaterial();
 			heightmap->render();
 		glPopMatrix();
 
@@ -242,8 +333,6 @@ void renderObjects(int width, int height) {
 			for(tree::Tree* t : trees) {
 				t->render();
 			}
-
-			// t->render();
 		glPopMatrix();
 
 		boidMaterial();
@@ -262,8 +351,6 @@ void renderObjects(int width, int height) {
 	glPopMatrix();
 
 	glFlush();
-
-
 }
 
 // Draw function
@@ -288,8 +375,16 @@ void render(int width, int height) {
 
 	// Enable Drawing texures
 	glEnable(GL_TEXTURE_2D);
+
+	// Bind shader
+	glUseProgram(g_shader);
+
+	glUniform1i(glGetUniformLocation(g_shader, "texture0"), 0);
 	
 	renderObjects(width, height);
+
+	// Unbind shader
+	glUseProgram(0);
 
 	// Disable flags for cleanup (optional)
 	glDisable(GL_TEXTURE_2D);
@@ -313,6 +408,20 @@ int main(int argc, char **argv) {
 		abort(); // Unrecoverable error
 	}
 
+
+	if(argc >= 2) {
+		int tempSize = *argv[1] - '0';
+		if(0 > tempSize || tempSize > 5) {
+			cerr << "Error: Map Size " << tempSize << " is out of bounds (0 - 5)" << endl;
+			abort();
+		}
+		mapSize = tempSize;
+	}
+
+	if(argc == 3) {
+		treeFile = argv[2];
+	}
+
 	// Get the version for GLFW for later
 	int glfwMajor, glfwMinor, glfwRevision;
 	glfwGetVersion(&glfwMajor, &glfwMinor, &glfwRevision);
@@ -327,8 +436,6 @@ int main(int argc, char **argv) {
 	// Make the g_window's context is current.
 	// If we have multiple windows we will need to switch contexts
 	glfwMakeContextCurrent(g_window);
-
-
 
 	// Initialize GLEW
 	// must be done after making a GL context current (glfwMakeContextCurrent in this case)
@@ -372,10 +479,12 @@ int main(int argc, char **argv) {
 
 
 	// Initialize Geometry/Material/Lights
+	initTextures();
 	initFlock();
 	initHeightmap();
+	initShader();
 	initTrees();
-	initLight();
+	initLights();
 
 	// Loop until the user closes the window
 	while (!glfwWindowShouldClose(g_window)) {

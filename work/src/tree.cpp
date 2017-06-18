@@ -120,8 +120,6 @@ void Tree::createDisplayList() {
 	displayList = glGenLists(1);
 	glNewList(displayList, GL_COMPILE);
 
-	// drawAxis();
-
 	glRotatef(-90, 1, 0, 0);
 
 	createFromString();
@@ -131,8 +129,6 @@ void Tree::createDisplayList() {
 
 void Tree::createFromString() {
 	string s = strings.back();
-
-	cout << s << endl;
 
 	for(int i = 0; i < int(s.size()); i++) {
 		char c = s.at(i);

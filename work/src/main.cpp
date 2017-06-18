@@ -60,6 +60,8 @@ GLuint snow_texture = 0;
 //
 int mapSize = 4;
 string treeFile = "../work/res/trees/trees.txt";
+bool useOctTree = false;
+int num_boids = 200;
 
 // Base Heightmap to be rendered upon
 //
@@ -70,7 +72,6 @@ vector<tree::Tree*> trees;
 //Flock of birds
 //
 Flock* flock;
-vector<Flock*> flocks;
 Boid* boid;
 
 //flags
@@ -111,7 +112,7 @@ void scrollCallback(GLFWwindow *win, double xoffset, double yoffset) {
 }
 
 void step(){
-	flock->update();	
+	flock->update(useOctTree);	
 }
 
 
@@ -131,6 +132,9 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 		if(debugMode){
 			step();
 		}
+	}
+	if(key == 79 && action == 1){
+		useOctTree = !useOctTree;
 	}
 }
 
@@ -279,11 +283,7 @@ void initTrees() {
 }
 
 void initFlock(){
-	flock = new Flock(200);
-	for(int i = 0; i < 3; i++) {
-		Flock* f = new Flock(10);
-		flocks.push_back(f);
-	}
+	flock = new Flock(num_boids);
 	boid = new Boid(vec3(1, 1, 1));
 }
 
@@ -337,7 +337,7 @@ void renderObjects(int width, int height) {
 
 		boidMaterial();
 		if(!debugMode){
-			flock->update();
+			flock->update(useOctTree);
 		}
 		else{
 			flock->render();
@@ -420,6 +420,15 @@ int main(int argc, char **argv) {
 
 	if(argc == 3) {
 		treeFile = argv[2];
+	}
+	else if(argc == 4) {
+		treeFile = argv[2];
+		num_boids = *argv[3] - '0';
+	}
+	else if(argc == 5){
+		treeFile = argv[2];
+		num_boids = *argv[3] - '0';
+		useOctTree = argv[4];
 	}
 
 	// Get the version for GLFW for later

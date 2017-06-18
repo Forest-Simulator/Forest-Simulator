@@ -26,6 +26,9 @@ public:
 	cgra::vec3 velocity;
 	cgra::vec3 destination;
 
+	int o_neighbours = 0;
+	cgra::vec3 o_velocity = vec3(0, 0, 0);
+
 	Boid* left = nullptr;
 	Boid* right = nullptr;
 	Boid* parent = nullptr;

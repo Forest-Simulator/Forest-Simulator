@@ -16,11 +16,16 @@ Flock::Flock(int size){
 	oct_tree = new OctTree(vec3(-50, -50, -50), vec3(100, 100, 100), boids);
 } 
 
-void Flock::update(){
+void Flock::update(bool useTree){
+	use_tree = useTree;
+
 	leader->destination = destination;
 	steer(leader);
 	leader->render();
 
+	if(use_tree){
+		octSeparate();
+	}
 	int s = boids.size();
 	for(int i = 0; i < s; ++i){
 		boids[i]->destination = boids[i]->parent->position;
@@ -37,7 +42,9 @@ void Flock::update(){
 void Flock::steer(Boid *b){
 	vec3 v = vec3(0, 0, 0);
 	v += align(b) * 0.006;
-	v += separate(b);
+	if(!use_tree){
+		v += separate(b);
+	}
 
 	b->velocity += v;
 
@@ -100,6 +107,25 @@ vec3 Flock::separate(Boid *b){
 		return velocity;
 	}
 	return velocity;
+}
+
+void Flock::octSeparate(){
+	vector<Boid*> obsList;
+	vector<hitRecord> collisions = oct_tree->findCollisions(obsList);
+
+	for(hitRecord hr : collisions){
+		hr.boid->o_velocity += normalizeVector(hr.force);
+		hr.boid->o_neighbours++;
+	}
+
+	for(hitRecord hr : collisions){
+		if(hr.boid->o_neighbours > 0){
+			if(hr.boid->o_velocity.x != 0){hr.boid->o_velocity.x /= hr.boid->o_neighbours;}
+			if(hr.boid->o_velocity.y != 0){hr.boid->o_velocity.y /= hr.boid->o_neighbours;}
+			if(hr.boid->o_velocity.z != 0){hr.boid->o_velocity.z /= hr.boid->o_neighbours;}
+		}
+		hr.boid->velocity += hr.boid->o_velocity;
+	}
 }
 
 void Flock::setDestination(vec3 dest){

@@ -7,8 +7,10 @@ using namespace cgra;
 
 class Flock{
 private:
+
 	OctTree *oct_tree = nullptr;
-	
+	bool use_tree = false;
+
 	Boid *leader = new Boid(vec3(0, 0, 0));
 	vec3 destination = vec3(15, 15, 15);
 	vector<Boid*> boids;
@@ -19,13 +21,14 @@ private:
 	float lengthVector(cgra::vec3 v);
 	cgra::vec3 normalizeVector(cgra::vec3 v);
 	cgra::vec3 separate(Boid *b);
+	void octSeparate();
 	cgra::vec3 align(Boid *b);
 	
 	void arrange(Boid *node, Boid *b);
 public:
 	Flock(int size);
 	void setDestination(vec3 dest);
-	void update();
+	void update(bool useTree);
 	void showOctTree();
 	void render();
 };

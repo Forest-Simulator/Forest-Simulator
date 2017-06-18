@@ -12,6 +12,12 @@ struct boundingBox{
 	cgra::vec3 size;	//goes to top right furthest corner
 };
 
+struct hitRecord{
+	Boid *boid;
+	Boid *neighbour;
+	cgra::vec3 force;
+};
+
 class OctTree{
 private:
 	queue<Boid*> pending_insertion;
@@ -35,16 +41,17 @@ private:
 	bool hasChildren = false;
 
 	void buildTree(int level);
-	void insert(Boid *boid);
 	void addOctant(cgra::vec3 pos, cgra::vec3 size, boundingBox *octant);
-	void update();
 	bool contains(Boid *boid, boundingBox box);
 	OctTree* createNode(boundingBox region, vector<Boid*> obs);
+	float lengthVector(cgra::vec3 v);
 public:
 	OctTree();
 	OctTree(boundingBox box);
 	OctTree(boundingBox box, vector<Boid*> obj);
 	OctTree(cgra::vec3 pos, cgra::vec3 size, vector<Boid*> obj);
-	void updateTree();
+
+	vector<hitRecord> findCollisions(vector<Boid*> parentObs);
+	
 	void renderTree(int level);
 };

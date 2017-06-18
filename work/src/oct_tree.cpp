@@ -29,87 +29,6 @@ OctTree::OctTree(vec3 pos, vec3 size, vector<Boid*> obj){
 	buildTree(0);
 }
 
-void OctTree::updateTree(){
-	if(!treeBuilt){
-		while(pending_insertion.size() != 0){
-			objects.push_back(pending_insertion.front());
-			pending_insertion.pop();
-		}
-		buildTree(0);
-	}
-	else{
-		while(pending_insertion.size() != 0){
-			insert(pending_insertion.front());
-			pending_insertion.pop();
-		}
-	}
-
-	treeReady = true;
-}
-
-// void OctTree::update(){
-// 	//Check node's lifespan. If the timer equals 0 we delete the node,
-// 	//otherwise we check to see if it is reused. If it does get reused, then
-// 	//double the lifespan
-// 	if(treeBuilt){
-
-// 		if(objects.size() == 0){
-
-// 			if(!hasChildren){
-
-// 				if(currentLife == -1){
-// 					currentLife = MAX_LIFESPAN;
-// 				}
-// 				else if(currentLife > 0){
-// 					--currentLife;
-// 				}
-// 			}
-// 		}
-// 		else{
-
-// 			if(currentLife != -1){
-
-// 				if(MAX_LIFESPAN <= 64){
-// 					MAX_LIFESPAN *= 2;
-// 				}
-// 				currentLife = -1;
-// 			}
-// 		}
-// 	}
-
-// 	//Update all child nodes
-// 	int i = 0;
-// 	for(int flags = activeNodes; flags > 0; flags >>= 1){
-// 		if((flags & 1) == 1){
-// 			children[i]->update();
-// 		}
-// 		++i;
-// 	}
-
-// 	//We need to move all this node's objects to a temp array so we can push them into the
-// 	//parent node while deleting them from this node
-// 	int s = objects.size();
-// 	vector<Boid*> moved;
-// 	for(int i = 0; i < s; ++i){
-// 		moved.push_back(objects[i]);
-// 	}
-
-	
-// 	for(int i = 0; i < s; ++i){
-// 		OctTree* current = this;
-
-// 		while(contains(objects[i], bounding_box)){
-
-// 			if(current->parent != nullptr){
-// 				current = current->parent;
-// 			}
-// 			else{
-// 				break;
-// 			}
-// 		}
-// 	}
-// }
-
 /*Recursively build an oct tree*/
 void OctTree::buildTree(int level){
 	// cout << "bilbo" << level << endl;
@@ -141,9 +60,9 @@ void OctTree::buildTree(int level){
 	addOctant(bounding_box.pos + vec3(factorHalf.x, factorHalf.y, factorHalf.z), factorHalf, &octants[7]);
 
 
-	//Create a temp list of objects that are going to be moved from the current cell into
-	//its children
-	vector<Boid*> moved;
+	//Create a temp list of indexes for objects that are going to be moved from the current 
+	//cell into its children
+	vector<int> moved;
 
 	//Create a list for each of the octants to store objects in
 	vector<Boid*> octantObjects[8];
@@ -164,29 +83,18 @@ void OctTree::buildTree(int level){
 
 				//Add to this octant's object list and add the moving list
 				octantObjects[j].push_back(objects[i]);
-				moved.push_back(objects[i]);
+				moved.push_back(i);
 				break;
 
 			}
 		}
 	}
 
-
-	//Remove moving objects from the current cell's object list
-	// s = moved.size();
-	// for(int i = 0; i < s; ++i){
-
-	// 	int t = objects.size();
-	// 	for(int j = 0; j < t; ++t){
-
-	// 		if(moved[i] == objects[j]){
-
-	// 			objects.erase(objects.begin() + j - 1);
-	// 			break;
-
-	// 		}
-	// 	}
-	// }
+	// Remove moving objects from the current cell's object list
+	s = moved.size();
+	for(int i = 0; i < s; ++i){
+		objects.erase(objects.begin() + moved[i] - i);
+	}
 
 	//Finally, create the child nodes
 	for(int i = 0; i < 8; ++i){
@@ -215,9 +123,6 @@ OctTree* OctTree::createNode(boundingBox region, vector<Boid*> obs){
 	return oct;
 }
 
-void OctTree::insert(Boid *boid){
-
-}
 
 bool OctTree::contains(Boid *boid, boundingBox box){
 	float minX = box.pos.x + boid->minimum_separation;
@@ -238,6 +143,77 @@ bool OctTree::contains(Boid *boid, boundingBox box){
 	}
 	// cout << "false" << endl;
 	return false;
+}
+
+float OctTree::lengthVector(vec3 v){
+	vec3 u = v;
+	float n = (u.x * u.x + u.y * u.y + u.z * u.z);
+	if(n != 0){
+		float l = sqrt(u.x * u.x + u.y * u.y + u.z * u.z);
+		return l;
+	}
+	return 0;
+}
+
+vector<hitRecord> OctTree::findCollisions(vector<Boid*> parentObs){
+	vector<hitRecord> collisions;
+
+	//Check parent collisions with objects in this node
+	for(Boid *pBoid : parentObs){
+
+		for(Boid *lBoid : objects){
+
+			vec3 f = pBoid->position - lBoid->position;
+			if(lengthVector(f) < pBoid->minimum_separation){
+				hitRecord hr = hitRecord();
+				hr.boid = pBoid;
+				hr.neighbour = lBoid;
+				hr.force = f;
+
+				collisions.push_back(hr);
+			}
+		}
+	}
+
+	//Check local collisions in this node
+	for(Boid *lBoid : objects){
+
+		for(Boid *b : objects){
+
+			if(lBoid != b){
+
+				vec3 f = lBoid->position - b->position;
+				if(lengthVector(f) < lBoid->minimum_separation){
+					hitRecord hr = hitRecord();
+					hr.boid = lBoid;
+					hr.neighbour = b;
+					hr.force = f;
+
+					collisions.push_back(hr);
+				}
+			}
+		}
+	}
+
+	for(Boid *b : objects){
+		parentObs.push_back(b);
+	}
+
+	vector<hitRecord> tmp;
+	int i = 0;
+	for(uint8_t flags = activeNodes; flags > 0; flags >>= 1){
+
+		if((flags & 1) == 1){
+
+			tmp = children[i]->findCollisions(parentObs);
+			for(hitRecord hr : tmp){
+
+				collisions.push_back(hr);
+			}
+		}
+		++i;
+	}
+	return collisions;
 }
 
 void OctTree::renderTree(int level){

@@ -225,7 +225,6 @@ void initDirectionalLight() {
 	glLightfv(GL_LIGHT2, GL_POSITION, position);
 	glLightfv(GL_LIGHT2, GL_DIFFUSE, light);
 	glLightfv(GL_LIGHT2, GL_SPECULAR, light);
-	// glLightfv(GL_LIGHT2, GL_AMBIENT, noLight);
 
 	glEnable(GL_LIGHT2);
 }
@@ -264,15 +263,19 @@ void initTrees() {
 	float halfIncr = incr / 2;
 	int halfSize = (heightmap->getSize() - incr) / 2;
 	int y = halfSize;
+
+	int triangleIndex = 0;
+	vector<Triangle> triangles = heightmap->getTriangles();
+	vector<vec3> vertices = heightmap->getVertices();
 	
-	for(int x = -halfSize; x < halfSize; x += incr) {
+	for(int x = -halfSize; x <= halfSize; x += incr) {
 		// Randomly offset the trees
 		float offsetX = math::random(-halfIncr, halfIncr);
 		float offsetY = math::random(-halfIncr, halfIncr);
 		trees.push_back(treeFactory->generate(vec3(x+offsetX, -y+offsetY, 0)));
-		if(x+incr == halfSize && y > -halfSize) {
+		if(x == halfSize && y > -halfSize) {
 			y -= incr;
-			x = -halfSize;
+			x = -halfSize - incr;
 		}
 	}
 
@@ -291,8 +294,10 @@ void groundMaterial() {
 	glUniform1f(glGetUniformLocation(g_shader, "texture_multiplier"), 1.0f);
 	glBindTexture(GL_TEXTURE_2D, snow_texture);
 
-	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat mat_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+	// GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+	// GLfloat mat_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 1.0 };
+	GLfloat mat_diffuse[] = { 1.0, 0.0, 0.0, 1.0 };
 	GLfloat mat_shininess[] = { 100.0 };
 
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);

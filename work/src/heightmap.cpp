@@ -48,6 +48,10 @@ vector<vec3> Heightmap::getVertices() {
 	return vertices;
 }
 
+vector<Triangle> Heightmap::getTriangles() {
+	return triangles;
+}
+
 void Heightmap::constructHelper() {
 	vector<float> vals (size, initial);
 	heightmap.assign(size, vals);

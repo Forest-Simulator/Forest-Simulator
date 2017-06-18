@@ -51,9 +51,8 @@ float g_pitch = 0;
 float g_yaw = 0;
 float g_zoom = 1.0;
 
-// Shader code
+// Textures
 //
-GLuint g_shader = 0;
 GLuint snow_texture = 0;
 
 // Command line argument defaults
@@ -235,22 +234,6 @@ void initLights() {
 	initDirectionalLight();
 }
 
-void initShader() {
-	// To create a shader program we use a helper function
-	// We pass it an array of the types of shaders we want to compile
-	// and the corrosponding locations for the files of each stage
-	g_shader = makeShaderProgramFromFile(
-		{
-			GL_VERTEX_SHADER,
-			GL_FRAGMENT_SHADER
-		},
-		{
-			"../work/res/shaders/vertex_shader.vert",
-			"../work/res/shaders/fragment_shader.frag"
-		}
-	);
-}
-
 void initHeightmap() {
 	heightmap = new hmap::Heightmap(mapSize);
 	heightmap->generateHeightmap();
@@ -287,7 +270,6 @@ void initFlock(){
 }
 
 void groundMaterial() {
-	glUniform1f(glGetUniformLocation(g_shader, "texture_multiplier"), 1.0f);
 	glBindTexture(GL_TEXTURE_2D, snow_texture);
 
 	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
@@ -300,7 +282,6 @@ void groundMaterial() {
 }
 
 void boidMaterial() {
-	glUniform1f(glGetUniformLocation(g_shader, "texture_multiplier"), 0.0f);
 	glBindTexture(GL_TEXTURE_2D, snow_texture);
 
 	GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1.0 };
@@ -374,16 +355,8 @@ void render(int width, int height) {
 
 	// Enable Drawing texures
 	glEnable(GL_TEXTURE_2D);
-
-	// Bind shader
-	glUseProgram(g_shader);
-
-	glUniform1i(glGetUniformLocation(g_shader, "texture0"), 0);
 	
 	renderObjects(width, height);
-
-	// Unbind shader
-	glUseProgram(0);
 
 	// Disable flags for cleanup (optional)
 	glDisable(GL_TEXTURE_2D);
@@ -492,7 +465,6 @@ int main(int argc, char **argv) {
 	initTextures();
 	initFlock();
 	initHeightmap();
-	initShader();
 	initTrees();
 	initLights();
 

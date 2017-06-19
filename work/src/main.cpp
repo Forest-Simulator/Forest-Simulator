@@ -229,7 +229,7 @@ void initDirectionalLight() {
 
 void initLights() {
 	initAmbientLight();
-	initSecondAmbientLight();
+	//initSecondAmbientLight();
 	initDirectionalLight();
 }
 
@@ -243,7 +243,7 @@ void initTrees() {
 
 	int incr = 8;
 	float halfIncr = incr / 2;
-	int halfSize = (heightmap->getSize() - incr) / 2;
+	int halfSize = (heightmap->getSize() - (incr*2)) / 2;
 	int y = halfSize;
 	
 	for(int x = -halfSize; x <= halfSize; x += incr) {
@@ -271,8 +271,8 @@ void initFlock(){
 void groundMaterial() {
 	glBindTexture(GL_TEXTURE_2D, snow_texture);
 
-	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat mat_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat mat_specular[] = { 0.7, 0.0, 0.0, 1.0 };
+	GLfloat mat_diffuse[] = { 0.7, 0.0, 0.0, 1.0 };
 	GLfloat mat_shininess[] = { 100.0 };
 
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
@@ -283,8 +283,8 @@ void groundMaterial() {
 void boidMaterial() {
 	glBindTexture(GL_TEXTURE_2D, snow_texture);
 
-	GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1.0 };
-	GLfloat mat_diffuse[] = { 0.8, 0.8, 0.8, 1.0 };
+	GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 0.0 };
+	GLfloat mat_diffuse[] = { 1.0, 0.0, 0.0, 0.0 };
 	GLfloat mat_shininess[] = { 0 };
 
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);

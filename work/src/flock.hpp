@@ -23,6 +23,7 @@ private:
 	cgra::vec3 separate(Boid *b);
 	void octSeparate();
 	cgra::vec3 align(Boid *b);
+	void checkChangeDest();
 	
 	void arrange(Boid *node, Boid *b);
 public:

@@ -21,6 +21,7 @@ void Flock::update(bool useTree){
 
 	leader->destination = destination;
 	steer(leader);
+	checkChangeDest();
 	leader->render();
 
 	if(use_tree){
@@ -54,6 +55,17 @@ void Flock::steer(Boid *b){
 	}
 
 	b->position += b->velocity;
+}
+
+void Flock::checkChangeDest(){
+	vec3 v = leader->position - destination;
+	if(lengthVector(v) < 5){
+		int x = rand() % 20;
+		int z = rand() % 20;
+		if(rand() % 2){x *= -1;}
+		if(rand() % 2){z *= -1;}
+		destination = vec3(x, 12, z);
+	}
 }
 
 float Flock::lengthVector(vec3 v){

@@ -99,4 +99,17 @@ in the same file. The generator will choose randomly from the list of trees.
 
 ## Flocking and Oct-tree
 
-Larry to add his stuff.
+Flocking algorithm spawns 200 boids and sets destination at 15, 15, 15. The destination changes
+randomly whenever the leader reaches it.
+
+rulestart
+    Press s to toggle visual representation of the oct tree.
+    Press d to toggle pausing the simulation.
+    Press a while paused to step the simulation.
+    Press o to toggle the usage of the octree vs simple O(n^2) collision detection.
+ruleend
+
+In addition to the arguments above, you can add two extra arguments.
+
+Argument 3 is an int, and sets the number of boids. this is 200 by default
+Argument 4 is a bool, (type true or false) and sets whether the oct tree is in intial use at runtime or not.

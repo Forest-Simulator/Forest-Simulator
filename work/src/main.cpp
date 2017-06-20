@@ -133,6 +133,12 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 	}
 	if(key == 79 && action == 1){
 		useOctTree = !useOctTree;
+		if(useOctTree){
+			cout << "Using oct tree" << endl;
+		}
+		else{
+			cout << "Not using oct tree" << endl;
+		}
 	}
 }
 
@@ -283,8 +289,8 @@ void groundMaterial() {
 void boidMaterial() {
 	glBindTexture(GL_TEXTURE_2D, snow_texture);
 
-	GLfloat mat_specular[] = { 1.0, 0.0, 0.0, 0.0 };
-	GLfloat mat_diffuse[] = { 1.0, 0.0, 0.0, 0.0 };
+	GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 0.0 };
+	GLfloat mat_diffuse[] = { 0.0, 0.0, 0.0, 0.0 };
 	GLfloat mat_shininess[] = { 0 };
 
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
